@@ -1,0 +1,310 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================================
+// CORE PLATFORM & SAAS INDEPENDENT ISOLATION LAYERS
+// ==========================================
+
+model Tenant {
+  id String @id @default(uuid()) @db.Uuid
+
+  agencyName String @db.VarChar(255)
+
+  // Used for login routing
+  // e.g. abc.paktrack.com
+  subdomain String @unique @db.VarChar(100)
+
+  bankName    String? @db.VarChar(100)
+  accountNo   String? @db.VarChar(20)
+  accountName String? @db.VarChar(255)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  users    User[]
+  services ServiceCategory[]
+  clients  Client[]
+}
+
+enum Role {
+  PLATFORM_GLOBAL_ADMIN //The saas Platform overlord (me)
+  AGENCY_ADMIN // agency Owner
+  DESK_AGENT //Travel Consultant  / Account Manager
+}
+
+model User {
+  id String @id @default(uuid()) @db.Uuid
+
+  // NULL only for platform administrators
+  tenantId String? @db.Uuid
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  email String @db.VarChar(255)
+
+  passwordHash String @db.VarChar(255)
+
+  role Role @default(DESK_AGENT)
+
+  isActive Boolean @default(true)
+
+  lastLoginAt DateTime? @db.Timestamptz(6)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  assignedClients Client[] @relation("AssignedClients")
+
+  verifiedTransactions Transaction[] @relation("VerifiedTransactions")
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@index([role])
+}
+
+// ==========================================
+// DYNAMIC PACKAGING & TEMPLATE CONFIGURATIONS
+// =================
+
+model ServiceCategory {
+  id String @id @default(uuid()) @db.Uuid
+
+  tenantId String @db.Uuid
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  serviceName String @db.VarChar(255)
+
+  baseCostNaira Decimal @db.Decimal(12, 2)
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  templateItems ChecklistItemTemplate[]
+
+  clients Client[]
+
+  @@unique([tenantId, serviceName])
+  @@index([tenantId])
+}
+
+model ChecklistItemTemplate {
+  id String @id @default(uuid()) @db.Uuid
+
+  serviceCategoryId String @db.Uuid
+
+  serviceCategory ServiceCategory @relation(fields: [serviceCategoryId], references: [id], onDelete: Cascade)
+
+  documentName String @db.VarChar(255)
+
+  description String? @db.Text
+
+  displayOrder Int
+
+  isRequired Boolean @default(true)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  documents Document[] // <-- ADD THIS
+
+  @@unique([serviceCategoryId, documentName])
+  @@unique([serviceCategoryId, displayOrder])
+  @@index([serviceCategoryId])
+}
+
+// ==========================================
+// TRAVELLER META ARCHIVES & RETRIEVAL CHANNELS
+//
+
+//
+enum MasterStatus {
+  DOCUMENT_GATHERING
+
+  PAYMENT_PENDING
+
+  PAYMENT_VERIFIED
+
+  SUBMITTED
+
+  PROCESSING
+
+  PASSPORT_READY
+
+  COMPLETED
+
+  CANCELLED
+}
+
+model Client {
+  id                String          @id @default(uuid()) @db.Uuid
+  tenantId          String          @db.Uuid
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  assignedStaffId   String          @db.Uuid
+  assignedStaff     User            @relation("AssignedClients", fields: [assignedStaffId], references: [id], onDelete: Restrict)
+  serviceCategoryId String          @db.Uuid
+  serviceCategory   ServiceCategory @relation(fields: [serviceCategoryId], references: [id], onDelete: Restrict)
+  firstName         String          @db.VarChar(100)
+  lastName          String          @db.VarChar(100)
+  phoneNumber       String          @db.VarChar(30) // Stored internationally (+234...)
+  magicToken        String          @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tokenExpiredAt    DateTime        @db.Timestamptz(6)
+  masterStatus      MasterStatus    @default(DOCUMENT_GATHERING)
+  createdAt         DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt         DateTime        @updatedAt @db.Timestamptz(6)
+  deletedAt         DateTime?       @db.Timestamptz(6)
+  //
+  isTokenUsed       Boolean         @default(false)
+
+  documents    Document[]
+  transactions Transaction[]
+
+  @@index([tenantId])
+  @@index([assignedStaffId])
+  @@index([masterStatus])
+  @@index([tenantId, phoneNumber])
+}
+
+// ==========================================
+// DOCUMENT TRACKING AND PIPELINE EXECUTION MATRICES
+// ==========================================
+
+enum DocStatus {
+  PENDING_UPLOAD
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+}
+
+model Document {
+  id String @id @default(uuid()) @db.Uuid
+
+  clientId String @db.Uuid
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  checklistTemplateId String @db.Uuid
+
+  checklistTemplate ChecklistItemTemplate @relation(fields: [checklistTemplateId], references: [id], onDelete: Restrict)
+
+  status DocStatus @default(PENDING_UPLOAD)
+
+  storageKey String? @db.VarChar(512)
+
+  rejectionReason String? @db.Text
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  deletedAt DateTime? @db.Timestamptz(6)
+
+  @@index([clientId])
+  @@index([status])
+}
+
+// ==========================================
+// FINANCIAL REVENUE LEDGER OPERATIONS
+// ==========================================
+
+enum TxStatus {
+  PENDING_VERIFICATION
+  SUCCESSFUL
+  REJECTED
+}
+
+model Transaction {
+  id String @id @default(uuid()) @db.Uuid
+
+  clientId String @db.Uuid
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  amountPaid Decimal @db.Decimal(12, 2)
+
+  paymentMethod PaymentMethod
+
+  receiptStorageKey String? @db.VarChar(512)
+
+  paymentReference String? @db.VarChar(255)
+
+  status TxStatus @default(PENDING_VERIFICATION)
+
+  notes String? @db.Text
+
+  verifiedById String? @db.Uuid
+
+  verifiedBy User? @relation("VerifiedTransactions", fields: [verifiedById], references: [id])
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  deletedAt DateTime? @db.Timestamptz(6)
+
+  @@index([clientId])
+  @@index([status])
+  @@index([verifiedById])
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+
+  CASH
+
+  POS
+
+  CARD
+
+  MOBILE_MONEY
+}
+
+// ==========================================
+// TRANSACTIONAL OUTBOX PATTERN SYSTEM TRACK
+// ==========================================
+
+enum OutboxStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+model OutboxEvent {
+  id String @id @default(uuid()) @db.Uuid
+
+  eventType String @db.VarChar(100)
+
+  payload Json
+
+  status OutboxStatus @default(PENDING)
+
+  retryCount Int @default(0)
+
+  processedAt DateTime? @db.Timestamptz(6)
+
+  errorLog String? @db.Text
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@index([status])
+  @@index([createdAt])
+}
