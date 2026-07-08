@@ -11,7 +11,7 @@ const SALT_ROUNDS = 12;
 // JWT expiration time.
 const TOKEN_EXPIRATION = "12h";
 
-export const registerAgency = async ({agencyName,subdomain,email,password}) => {
+export const createRegisterAgency = async ({agencyName,subdomain,email,password}) => {
 
    if (!subdomain) {
     throw new AppError(
@@ -112,7 +112,7 @@ export const registerAgency = async ({agencyName,subdomain,email,password}) => {
 // Login User
 // =============================================
 
-export const loginUser = async ({ email, password }) => {
+export const agencyLogin = async ({ email, password }) => {
   
   // Find user including tenant.
   const user = await prisma.user.findFirst({

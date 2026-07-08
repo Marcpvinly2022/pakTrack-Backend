@@ -6,7 +6,7 @@ import { loginSchema, registerSchema } from './auth.validator.js';
 
 export const registerAgency = async (req, res, next) => {
     try {
-        console.log(req.body);
+        // console.log(req.body);
         const payload = registerSchema.safeParse(req.body);
         if(!payload.success){
             throw new AppError(
@@ -18,8 +18,8 @@ export const registerAgency = async (req, res, next) => {
                 }))
             )
         }
-        console.log(payload)
-        const serviceResult = await authService.registerAgency(payload.data);
+        // console.log(payload)
+        const serviceResult = await authService.createRegisterAgency(payload.data);
 
         return res.status(201).json({
             status: 'success',
@@ -35,6 +35,7 @@ export const registerAgency = async (req, res, next) => {
 };
 
 export const loginUser = async (req, res, next) => {
+
     try {
         const payload = loginSchema.safeParse(req.body);
         if(!payload.success){
@@ -48,7 +49,7 @@ export const loginUser = async (req, res, next) => {
             )
         }
 
-        const authenticationData = await authService.loginUser(payload.data);
+        const authenticationData = await authService.agencyLogin(payload.data);
 
         return res.status(200).json({
             success: true,
@@ -58,11 +59,6 @@ export const loginUser = async (req, res, next) => {
 
     } catch (error) {
         console.error('Login Error:', error);
-
-        if (error instanceof authService.BusinessError) {
-            return next(new AppError(error.statusCode, error.code, error.message));
-        }
-
         return next(error);
     }
 };
