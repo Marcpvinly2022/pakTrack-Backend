@@ -31,19 +31,19 @@ const envSchema = z.object({
     .url(),
 });
 
-/**
- * Parse and validate process.env.
- * safeParse() returns an object instead of throwing immediately,
- * allowing us to format errors nicely.
- */
+
 
 const parsedEnv = envSchema.safeParse(process.env);
 
 if(!parsedEnv.success) {
     console.log("Environment validation failed.\n");
     console.error(parsedEnv.error.format());
-
-    process.emit(1);
-
+    process.exit(1); // Note: Changed from process.emit(1) which is invalid and hangs
 }
 
+//  CRITICAL FIX: Merge the sanitized, typed configuration properties 
+// back into the global Node process.env scope for external driver adapters
+Object.assign(process.env, parsedEnv.data);
+
+// Optional Best Practice: Export the safe parsed object for internal file utilities
+export const env = parsedEnv.data;

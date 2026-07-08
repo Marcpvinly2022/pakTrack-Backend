@@ -1,9 +1,9 @@
 
 import express from 'express';
 import cors from 'cors';
-import { globalErrorHandler, AppError } from './middleware/errorHandler.js';
+import { errorHandler, AppError } from './middlewares/errorHandler.js';
 import authRoute from '../src/modules/auth/auth.routes.js';
-import { prisma } from '../src/config/db.js';
+import { prisma } from '../src/config/database.js';
 
 
 
@@ -30,6 +30,6 @@ app.all('/*any', (req, res, next) => {
     return next(new AppError(404, 'ROUTE_NOT_FOUND', `The requested route path [${req.originalUrl}] does not exist.`));
 });
 
-app.use(globalErrorHandler);
+app.use(errorHandler);
 
 export default app;

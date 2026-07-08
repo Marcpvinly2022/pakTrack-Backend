@@ -1,37 +1,47 @@
-// Centralized System Application Custom Exception Class
+import { ZodError } from "zod";
+
 export class AppError extends Error {
-    constructor(statusCode, errorCode, message) {
-        super(message);
+    // Fixed: Ensured 'customErrors' is initialized safely as a constructor parameter
+    constructor(statusCode, code, message, customErrors = null) { 
+        const displayMessage = Array.isArray(message) ? "Validation failed." : message;
+        super(displayMessage);
+
         this.statusCode = statusCode;
-        this.errorCode = errorCode;
-        this.isOperational = true;  // Differentiates developer bugs from expected app failures
-
-        Error.captureStackTrace(this, this.constructor);
-
+        this.code = code;
+        // Secure assignment checking if message array was passed directly as the container
+        this.errors = Array.isArray(message) ? message : customErrors; 
     }
 }
-// Global Central Interceptor Exception Handler Middleware
-export const globalErrorHandler = (err, req, res, next) => {
-    err.statusCode = err.statusCode || 500;
-    err.errorCode = err.errorCode || 'INTERNAL_SERVER_ERROR';
 
-// Production response strategy: Never leak low-level stack strings to the API consumer
+export const errorHandler = (err, req, res, next) => {
+    // 1. Catches direct Zod validation errors if parsing using schema.parse()
+    if (err instanceof ZodError) {
+        return res.status(400).json({
+            success: false,
+            code: "VALIDATION_ERROR",
+            errors: err.issues.map(issue => ({
+                field: issue.path.join("."),
+                message: issue.message
+            }))
+        });
+    }
 
-if (process.env.NODE_ENV === 'development') {
-    return res.status(err.statusCode).json({
-        status: 'error',
-        code: err.errorCode,
-        message: err.message,
-        stack: err.stack
+    // 2. Catches operational errors intentionally thrown by your code
+    if (err instanceof AppError) {
+        return res.status(err.statusCode).json({
+            success: false,
+            code: err.code,
+            message: err.message,
+            ...(err.errors && { errors: err.errors }) // Dynamically append error lists if they exist
+        });
+    }
+
+    // 3. Fallback for unexpected system crashes
+    console.error("[Fatal System Crash]:", err);
+
+    return res.status(500).json({
+        success: false,
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something went wrong."
     });
-}
-
-// Production / Staging deployment response layout
-return res.status(err.statusCode).json({
-    status: 'error',
-    code: err.errorCode,
-    message: err.statusCode === 500 ? 'An unexpected internal processing fault occurred.': err.message
-});
-
-
 };

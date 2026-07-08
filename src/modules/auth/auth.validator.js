@@ -1,22 +1,42 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const registerSchema = z.object({
-  body: z.object({
-    agencyName: z.string().trim().min(3, 'Agency name must be at least 3 characters.').max(255),
-    subdomain: z.string()
-      .trim()
-      .min(3, 'Subdomain must be at least 3 characters.')
-      .max(100)
-      .regex(/^[a-zA-Z0-9-_]+$/, 'Subdomain must contain only alphanumeric characters, hyphens, and underscores.')
-      .transform((val) => val.toLowerCase()),
-    email: z.string().trim().email('Invalid email address format.').max(255).transform((val) => val.toLowerCase()),
-    password: z.string().min(8, 'Password must be at least 8 characters long.').max(100),
-  }),
+  agencyName: z
+    .string({ required_error: "Agency name is required" })
+    .trim()
+    .min(3, { message: "Agency name must be at least 3 characters long" })
+    .max(255, { message: "Agency name cannot exceed 255 characters" }),
+
+  subdomain: z
+    .string({ required_error: "Subdomain is required" })
+    .trim()
+    .min(3, { message: "Subdomain must be at least 3 characters long" })
+    .max(100, { message: "Subdomain cannot exceed 100 characters" })
+    .regex(/^[a-zA-Z0-9-_]+$/, { 
+      message: "Subdomain can only contain alphanumeric characters, hyphens, and underscores" 
+    })
+    .transform(v => v.toLowerCase()),
+
+  email: z
+    .string({ required_error: "Email address is required" })
+    .trim()
+    .email({ message: "Please enter a valid email address" })
+    .transform(v => v.toLowerCase()),
+
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .max(100, { message: "Password cannot exceed 100 characters" }),
 });
 
 export const loginSchema = z.object({
-  body: z.object({
-    email: z.string().trim().email('Invalid email address format.').transform((val) => val.toLowerCase()),
-    password: z.string().min(1, 'Password cannot be empty.'),
-  }),
+  email: z
+    .string({ required_error: "Email address is required" })
+    .trim()
+    .email({ message: "Please enter a valid email address" })
+    .transform(v => v.toLowerCase()),
+
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(1, { message: "Password cannot be blank" }),
 });

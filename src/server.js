@@ -2,7 +2,7 @@ import 'dotenv/config';
 console.log("🔍 DEBUG: DATABASE_URL value is ->", process.env.DATABASE_URL);
 import app from './app.js';
 import { redisClient } from './config/redis.js';
-import { prisma } from './config/db.js';
+import { prisma } from '../src/config/database.js';
 
 const PORT = process.env.PORT || 5000;
 
