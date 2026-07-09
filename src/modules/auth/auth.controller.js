@@ -2,6 +2,7 @@ import * as authService from './auth.service.js';
 import { AppError } from '../../middlewares/errorHandler.js';
 import { prisma } from '../../config/database.js';
 import { loginSchema, registerSchema } from './auth.validator.js';
+import { success } from 'zod';
 
 
 export const registerAgency = async (req, res, next) => {
@@ -58,7 +59,30 @@ export const loginUser = async (req, res, next) => {
         });
 
     } catch (error) {
-        console.error('Login Error:', error);
+       console.error(error);
+       console.error(error.stack);
         return next(error);
+    }
+};
+
+
+export const getCurrentUser = async (req, res, next) => {
+    try{
+        if(!req.user || !req.user.userId){
+            throw new AppError(
+                401,
+                "UNAUTHORIZED",
+                "Missing user payload"
+            )
+        }
+        const profile = await authService.getCurrentUser({userId: req.user.userId});
+        return res.status(200).json({
+            success: true,
+            message: "Current user retrieved successfully",
+            data: profile,
+        });
+
+    }catch(error){
+        next(error);
     }
 };

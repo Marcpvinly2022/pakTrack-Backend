@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import { errorHandler, AppError } from './middlewares/errorHandler.js';
 import authRoute from '../src/modules/auth/auth.routes.js';
+import staffRoute from '../src/modules/staff/staff.routes.js';
 import { prisma } from '../src/config/database.js';
 
 
@@ -21,6 +22,7 @@ app.get('/api/v1/health', (req, res) => {
 });
 
 app.use('/api/v1/auth', authRoute);
+app.use('/api/v1/staff', staffRoute);
 
 app.get('/api/v1/debug-error', (req, res, next) => {
     return next(new AppError(403, 'ACCESS_DENIED', 'Security boundary exception: Access denied'));

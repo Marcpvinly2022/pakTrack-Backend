@@ -1,0 +1,5 @@
+export const ROLES = {
+    AGENCY_ADMIN: "AGENCY_ADMIN",
+    DESK_AGENT: "DESK_AGENT",
+    TRAVELLER: "TRAVELLER",
+};

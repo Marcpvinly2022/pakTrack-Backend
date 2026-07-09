@@ -2,14 +2,10 @@
 import bcrypt from "bcrypt";
 
 // Used for generating JWT access tokens.
-import jwt from "jsonwebtoken";
+import { generateAccessToken } from "../../utils/jwt.js";
 import { prisma } from "../../config/database.js";
 import { AppError } from "../../middlewares/errorHandler.js";
-
-const SALT_ROUNDS = 12;
-
-// JWT expiration time.
-const TOKEN_EXPIRATION = "12h";
+import { ROLES } from "../constants/roles.js";
 
 export const createRegisterAgency = async ({agencyName,subdomain,email,password}) => {
 
@@ -48,18 +44,14 @@ export const createRegisterAgency = async ({agencyName,subdomain,email,password}
       "A user with this email already exists."
     );
   }
+  const SALT_ROUNDS = 12;
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-
-  // -----------------------------------------
   // Transaction
-  //
   // Create:
   // 1. Tenant
   // 2. Agency Admin
-  //
   // Either both succeed or both rollback.
-  // -----------------------------------------
 
   const result = await prisma.$transaction(async (tx) => {
     // Create tenant
@@ -81,7 +73,7 @@ export const createRegisterAgency = async ({agencyName,subdomain,email,password}
 
         passwordHash,
 
-        role: "AGENCY_ADMIN",
+        role: ROLES.AGENCY_ADMIN,
       },
     });
 
@@ -91,12 +83,9 @@ export const createRegisterAgency = async ({agencyName,subdomain,email,password}
     };
   });
 
-  // -----------------------------------------
+ 
   // Return DTO
-  //
   // Never return database models directly.
-  // -----------------------------------------
-
   return {
     tenantId: result.tenant.id,
 
@@ -167,9 +156,7 @@ export const agencyLogin = async ({ email, password }) => {
   };
 
   // Generate Access Token
-  const token = jwt.sign(payload, jwtSecret, {
-    expiresIn: TOKEN_EXPIRATION,
-  });
+  const token = generateAccessToken(payload, jwtSecret);
 
   // Update last login timestamp.
 
@@ -200,3 +187,38 @@ export const agencyLogin = async ({ email, password }) => {
     },
   };
 };
+
+
+export const getCurrentUser = async ({ userId}) => {
+  if (!userId) {
+    throw new AppError(400, "BAD_REQUEST", "User ID is required.");
+  }
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include:{
+      tenant: true,
+    },
+  });
+
+  if(!user){
+    throw new AppError(
+      404,
+      "USER_NOT_FOUND",
+      "Authenticated user no longer exists."
+    );
+  }
+
+
+return {
+  id: user.id,
+  email: user.email,
+  role: user.role,
+  tenantId: user.tenantId,
+  agencyName: user.tenant?.agencyName,
+  subdomain: user.tenant?.subdomain,
+
+}
+
+}
