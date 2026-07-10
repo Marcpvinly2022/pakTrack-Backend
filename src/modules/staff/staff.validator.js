@@ -26,7 +26,7 @@ export const createStaffSchema = z.object({
 //update staff status 
 export const updateStaffSchema = z.object({
     isActive: z
-       .boolean(),
+       . boolean({ required_error: "isActive flag status is required." })
 });
 
 //staff Id parameter 

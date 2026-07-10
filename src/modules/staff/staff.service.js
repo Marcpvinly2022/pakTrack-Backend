@@ -73,9 +73,10 @@ export const getAllStaff = async ({tenantId}) => {
 
 //update staff status
 export const updateStaffStatus = async ({tenantId, staffId, isActive}) => {
+    //Multi-Tenant Security Check
     const staff = await prisma.user.findFirst({
         where: {
-            id: staff,
+            id: staffId,
             tenantId,
             role: ROLES.DESK_AGENT,
         },
@@ -101,8 +102,8 @@ export const updateStaffStatus = async ({tenantId, staffId, isActive}) => {
         select: {
             id: true,
             email: true,
-            role,
-            isActive,
+            role: true,
+            isActive: true,
         },
     });
 

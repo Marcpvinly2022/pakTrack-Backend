@@ -109,6 +109,13 @@ export const updateStaffStatus = async (req, res, next) => {
             staffId: params.data.id,
             isActive: body.data.isActive
         });
+
+        return res.status(200).json({
+            success: true,
+            message: "Staff member status updated successfully.",
+            data: updatedStaff
+        });
+        
     } catch (error) {
         next(error);
     }
