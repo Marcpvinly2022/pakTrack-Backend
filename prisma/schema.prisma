@@ -67,6 +67,7 @@ model User {
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
   assignedClients Client[] @relation("AssignedClients")
+  createdClients Client[] @relation("CreatedClients")
 
   verifiedTransactions Transaction[] @relation("VerifiedTransactions")
 
@@ -153,13 +154,25 @@ enum MasterStatus {
   CANCELLED
 }
 
+
+enum ClientAccountStatus {
+  INVITED
+  ACTIVE
+  DISABLED
+}
+
 model Client {
   id                String          @id @default(uuid()) @db.Uuid
   tenantId          String          @db.Uuid
   tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  assignedStaffId   String          @db.Uuid
-  assignedStaff     User            @relation("AssignedClients", fields: [assignedStaffId], references: [id], onDelete: Restrict)
+  email             String          @db.VarChar(255)
+  passwordHash      String?         @db.VarChar(255)
+  lastLoginAt       DateTime?       @db.Timestamptz(6)    
+  createdByUserId   String          @db.Uuid
+  createdByUser     User            @relation("CreatedClients", fields: [createdByUserId], references: [id], onDelete: Restrict)
   serviceCategoryId String          @db.Uuid
+  assignedDeskAgencyId    String    @db.Uuid
+  assignedDeskAgency   User         @relation( "AssignedClients", fields: [assignedDeskAgencyId], references: [id], onDelete:Restrict)  
   serviceCategory   ServiceCategory @relation(fields: [serviceCategoryId], references: [id], onDelete: Restrict)
   firstName         String          @db.VarChar(100)
   lastName          String          @db.VarChar(100)
@@ -172,14 +185,17 @@ model Client {
   deletedAt         DateTime?       @db.Timestamptz(6)
   //
   isTokenUsed       Boolean         @default(false)
+  isActive          Boolean         @default(false)
+  accountStatus     ClientAccountStatus  @default(INVITED)
 
   documents    Document[]
   transactions Transaction[]
 
   @@index([tenantId])
-  @@index([assignedStaffId])
+  @@index([assignedDeskAgencyId])
+  @@index([createdByUserId])
   @@index([masterStatus])
-  @@index([tenantId, phoneNumber])
+  @@index([accountStatus])
 }
 
 // ==========================================
