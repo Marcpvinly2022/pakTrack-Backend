@@ -6,7 +6,7 @@ import { ROLES } from "../constants/roles.js";
 const SALT_ROUNDS = 12;
 
 //Create Staff
-export const createStaff = async ({tenantId, email, password, role}) => {
+export const createStaff = async ({tenantId, email, firstName, lastName, password, role}) => {
     //prevent duplicate email inside the same tenant
     const existingStaff = await prisma.user.findFirst({
         where: {
@@ -28,13 +28,18 @@ export const createStaff = async ({tenantId, email, password, role}) => {
     const staff = await prisma.user.create({
         data:{
             tenantId,
+            firstName,
+            lastName,
             email,
             passwordHash,
+            mustChangePassword: true,
             role,
         },
 
         select: {
             id:true,
+            firstName:true,
+            lastName:true,
             email:true,
             role:true,
             isActive:true,
@@ -42,7 +47,10 @@ export const createStaff = async ({tenantId, email, password, role}) => {
         },
     });
 
-    return staff;
+    return {
+        staff,
+        temporaryPassword: password,
+    }
 };
 
 //get all staff
@@ -54,7 +62,9 @@ export const getAllStaff = async ({tenantId}) => {
         },
 
         select: {
-             id:true,
+            id:true,
+            firstName: true,
+            lastName: true,
             email:true,
             role:true,
             isActive:true,

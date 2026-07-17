@@ -30,8 +30,9 @@ model Tenant {
 
   isActive Boolean @default(true)
 
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  createdAt     DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime       @updatedAt @db.Timestamptz(6)
+  notifications Notification[]
 
   users    User[]
   services ServiceCategory[]
@@ -52,9 +53,12 @@ model User {
 
   tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  email String @db.VarChar(255)
+  email     String  @db.VarChar(255)
+  firstName String? @db.VarChar(100)
+  lastName  String? @db.VarChar(100)
 
-  passwordHash String @db.VarChar(255)
+  passwordHash       String  @db.VarChar(255)
+  mustChangePassword Boolean @default(true)
 
   role Role @default(DESK_AGENT)
 
@@ -66,10 +70,12 @@ model User {
 
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-  assignedClients Client[] @relation("AssignedClients")
-  createdClients Client[] @relation("CreatedClients")
+  assignedClients   Client[]   @relation("AssignedClients")
+  reviewedDocuments Document[] @relation("ReviewedDocuments")
+  createdClients    Client[]   @relation("CreatedClients")
 
-  verifiedTransactions Transaction[] @relation("VerifiedTransactions")
+  verifiedTransactions Transaction[]  @relation("VerifiedTransactions")
+  notifications        Notification[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -154,7 +160,6 @@ enum MasterStatus {
   CANCELLED
 }
 
-
 enum ClientAccountStatus {
   INVITED
   ACTIVE
@@ -162,34 +167,33 @@ enum ClientAccountStatus {
 }
 
 model Client {
-  id                String          @id @default(uuid()) @db.Uuid
-  tenantId          String          @db.Uuid
-  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  email             String          @db.VarChar(255)
-  passwordHash      String?         @db.VarChar(255)
-  lastLoginAt       DateTime?       @db.Timestamptz(6)    
-  createdByUserId   String          @db.Uuid
-  createdByUser     User            @relation("CreatedClients", fields: [createdByUserId], references: [id], onDelete: Restrict)
-  serviceCategoryId String          @db.Uuid
-  assignedDeskAgencyId    String    @db.Uuid
-  assignedDeskAgency   User         @relation( "AssignedClients", fields: [assignedDeskAgencyId], references: [id], onDelete:Restrict)  
-  serviceCategory   ServiceCategory @relation(fields: [serviceCategoryId], references: [id], onDelete: Restrict)
-  firstName         String          @db.VarChar(100)
-  lastName          String          @db.VarChar(100)
-  phoneNumber       String          @db.VarChar(30) // Stored internationally (+234...)
-  magicToken        String          @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tokenExpiredAt    DateTime        @db.Timestamptz(6)
-  masterStatus      MasterStatus    @default(DOCUMENT_GATHERING)
-  createdAt         DateTime        @default(now()) @db.Timestamptz(6)
-  updatedAt         DateTime        @updatedAt @db.Timestamptz(6)
-  deletedAt         DateTime?       @db.Timestamptz(6)
+  id                   String              @id @default(uuid()) @db.Uuid
+  tenantId             String              @db.Uuid
+  tenant               Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email                String              @db.VarChar(255)
+  passwordHash         String?             @db.VarChar(255)
+  lastLoginAt          DateTime?           @db.Timestamptz(6)
+  createdByUserId      String              @db.Uuid
+  createdByUser        User                @relation("CreatedClients", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  serviceCategoryId    String              @db.Uuid
+  assignedDeskAgencyId String              @db.Uuid
+  assignedDeskAgency   User                @relation("AssignedClients", fields: [assignedDeskAgencyId], references: [id], onDelete: Restrict)
+  serviceCategory      ServiceCategory     @relation(fields: [serviceCategoryId], references: [id], onDelete: Restrict)
+  firstName            String              @db.VarChar(100)
+  lastName             String              @db.VarChar(100)
+  phoneNumber          String              @db.VarChar(30) // Stored internationally (+234...)
+  mustChangePassword   Boolean             @default(true)
+  masterStatus         MasterStatus        @default(DOCUMENT_GATHERING)
+  createdAt            DateTime            @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime            @updatedAt @db.Timestamptz(6)
+  deletedAt            DateTime?           @db.Timestamptz(6)
   //
-  isTokenUsed       Boolean         @default(false)
-  isActive          Boolean         @default(false)
-  accountStatus     ClientAccountStatus  @default(INVITED)
+  isActive             Boolean             @default(false)
+  accountStatus        ClientAccountStatus @default(INVITED)
 
-  documents    Document[]
-  transactions Transaction[]
+  documents     Document[]
+  notifications Notification[]
+  transactions  Transaction[]
 
   @@index([tenantId])
   @@index([assignedDeskAgencyId])
@@ -224,7 +228,20 @@ model Document {
 
   storageKey String? @db.VarChar(512)
 
-  rejectionReason String? @db.Text
+  rejectionReason  String? @db.Text
+  originalFileName String? @db.VarChar(255)
+
+  mimeType String? @db.VarChar(100)
+
+  fileSize Int?
+
+  version Int @default(1)
+
+  reviewedAt DateTime?
+
+  reviewedById String? @db.Uuid
+
+  reviewedBy User? @relation("ReviewedDocuments", fields: [reviewedById], references: [id])
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
 
@@ -323,4 +340,44 @@ model OutboxEvent {
 
   @@index([status])
   @@index([createdAt])
+}
+
+enum NotificationChannel {
+  EMAIL
+  IN_APP
+}
+
+enum NotificationStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+}
+
+model Notification {
+  id String @id @default(uuid()) @db.Uuid
+
+  tenantId String @db.Uuid
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  clientId String? @db.Uuid
+  client   Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  userId String? @db.Uuid
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  type String @db.VarChar(100)
+
+  subject String @db.VarChar(255)
+
+  message String @db.Text
+
+  channel   NotificationChannel
+  recipient String              @db.VarChar(255)
+
+  status NotificationStatus @default(PENDING)
+
+  sentAt DateTime?
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
 }

@@ -2,6 +2,8 @@ import * as staffService from "./staff.service.js";
 import { AppError } from "../../middlewares/errorHandler.js";
 import { createStaffSchema, updateStaffSchema, staffIdParamSchema } from "./staff.validator.js";
 import { success } from "zod";
+import { prisma } from "../../config/database.js";
+import {queueNotification} from "../notification/notification.service.js";
 
 //create staff
 export const createStaff = async (req, res, next) => {
@@ -26,15 +28,50 @@ export const createStaff = async (req, res, next) => {
             )
         };
 
-        const staff = await staffService.createStaff({
+        const result = await staffService.createStaff({
             tenantId: req.user.tenantId,
             ...payload.data,
+        });
+
+        const tenant = await prisma.tenant.findUnique({
+            where: {
+                id:req.user.tenantId,
+            },
+        });
+
+        if (!tenant) {
+            throw new AppError(
+                404,
+                "TENANT_NOT_FOUND",
+                "Tenant does not exist."
+            );
+        }
+
+        await queueNotification({
+            tenantId: req.user.tenantId,
+            userId: result.staff.id,
+            recipient: result.staff.email,
+
+            subject: "Welcome to PakTrack",
+
+            message:
+                `Welcome ${result.staff.firstName} ${result.staff.lastName}. ` +
+                `Your temporary password is ${result.temporaryPassword}.`,
+
+            type: "STAFF_ACCOUNT_CREATED",
+
+            payload: {
+                agencyName: tenant.agencyName,
+                staffName: `${result.staff.firstName} ${result.staff.lastName}`,
+                email: result.staff.email,
+                temporaryPassword: result.temporaryPassword,
+            },
         });
 
         return res.status(201).json({
             success: true,
             message: "Staff created successfully.",
-            data: staff,
+            data: result.staff,
         });
 
     } catch (error) {

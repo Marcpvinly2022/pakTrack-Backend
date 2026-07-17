@@ -11,9 +11,43 @@ export const createStaffSchema = z.object({
         .transform((v) => v.toLowerCase()),
     
     password: z
+    .string()
+    .min(8, {
+        message: "Password must be at least 8 characters.",
+    })
+    .max(100)
+    .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#_-])[A-Za-z\d@$!%*?&.#_-]+$/,
+        {
+            message:
+                "Password must contain an uppercase letter, lowercase letter, number and special character.",
+        }
+    ),
+
+    firstName: z
         .string()
-        .min(8, {message: "password must be at least 8 characters."})
-        .max(100),
+        .trim()
+        .min(2,{message: "First name must be at least 2 characters."})
+        .max(100)
+        .regex(
+        /^[A-Za-z'-\s]+$/,
+        {
+            message: "First name contains invalid characters.",
+        }
+    ),
+
+    lastName: z
+        .string()
+        .trim()
+        .min(2,{message: "Last name must be at least 2 characters."})
+        .max(100)
+        .regex(
+        /^[A-Za-z'-\s]+$/,
+        {
+            message: "First name contains invalid characters.",
+        }
+    ),
+        
 
     role: z
         .enum([ROLES.DESK_AGENT],{
@@ -26,7 +60,7 @@ export const createStaffSchema = z.object({
 //update staff status 
 export const updateStaffSchema = z.object({
     isActive: z
-       . boolean({ required_error: "isActive flag status is required." })
+       . boolean({ message: "isActive flag status is required." })
 });
 
 //staff Id parameter 

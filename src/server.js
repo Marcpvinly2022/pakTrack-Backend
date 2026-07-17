@@ -2,7 +2,9 @@ import 'dotenv/config';
 console.log("🔍 DEBUG: DATABASE_URL value is ->", process.env.DATABASE_URL);
 import app from './app.js';
 import { redisClient } from './config/redis.js';
-import { prisma } from '../src/config/database.js';
+import { prisma } from './config/database.js';
+import { verifyMailConnection } from './config/mail.js';
+import "./modules/notification/notification.worker.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -15,6 +17,8 @@ try {
     console.error('❌ Failed to connect to database:', error.message);
     process.exit(1);
 }
+
+await verifyMailConnection();
 
 // Start server
 const server = app.listen(PORT, () => {
