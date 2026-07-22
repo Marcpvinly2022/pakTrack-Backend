@@ -22,7 +22,7 @@ export const createClientSchema = z.object({
         .regex(
         /^[A-Za-z'-\s]+$/,
         {
-            message: "First name contains invalid characters.",
+            message: "last name contains invalid characters.",
         }
     ),
         
@@ -52,3 +52,41 @@ export const createClientSchema = z.object({
         .string()
         .uuid({message:"Invalid Service category id."}),
 });
+
+
+export const loginClientSchema = z.object({
+  email: z
+    .email("A valid email address is required.")
+    .trim()
+    .toLowerCase(),
+
+  password: z
+    .string()
+    .min(8, "Password is required."),
+});
+
+
+
+export const checkPasswordSchema = z.object({
+    currentPassword: z
+    .string()
+    .min(8),
+
+    newPassword: z
+    .string()
+    .min(8),
+
+    confirmPassword: z
+    .string()
+    .min(8)
+
+})
+
+
+.refine(
+    (data) => data.newPassword === data.confirmPassword,{
+    path: ["confirmPassword"],
+    message: "Password do not Match.",
+
+    }
+)

@@ -6,7 +6,7 @@ export const authenticate = async (req, res, next ) => {
         //Read Authorization header
         const authHeader = req.headers.authorization;
         // Header must exit
-        if(!authHeader){
+        if(!authHeader || !authHeader.startsWith("Bearer ")){
             throw new AppError(
                 401,
                 "UNAUTHORIZED",
@@ -15,25 +15,9 @@ export const authenticate = async (req, res, next ) => {
         }
 
         // Must use Bearer scheme
-        const token = authHeader.split(" ")[1];
+        const token = authHeader.substring(7);
 
-        const secrets =[
-            process.env.JWT_SECRET_STAFF,
-            process.env.JWT_SECRET_TRAVELLER
-        ]
-
-        let payload = null;
-
-        for(const secret of secrets){
-            try{
-                if(!secret) continue;  // Skip if environment variable isn't configured yet
-                payload = verifyAccessToken(token , secret);
-                break;
-            }catch{
-
-            }
-
-        }
+        const payload = verifyAccessToken(token);
 
         if(!payload){
             throw new AppError(

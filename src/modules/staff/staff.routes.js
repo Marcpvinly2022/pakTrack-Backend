@@ -13,6 +13,18 @@ router.post(
     staffController.createStaff
 );
 
+router.post(
+    "/login", 
+    staffController.staffLogin,
+);
+
+router.post(
+    "/change-password",
+    authenticate,
+    authorize(ROLES.DESK_AGENT),
+    staffController.changePassword
+);
+
 //get all staff
 router.get(
     "/",

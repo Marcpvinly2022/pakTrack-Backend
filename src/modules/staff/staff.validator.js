@@ -1,5 +1,6 @@
 import {z} from "zod";
 import { ROLES} from "../constants/roles.js"
+import { changePassword } from "./staff.controller.js";
 
 //Create Staff
 export const createStaffSchema = z.object({
@@ -69,3 +70,40 @@ export const staffIdParamSchema = z.object({
         .string()
         .uuid({message: "Invalid staff id."}),
 });
+
+
+export const loginStaffSchema = z.object({
+  email: z
+    .email("A valid email address is required.")
+    .trim()
+    .toLowerCase(),
+
+  password: z
+    .string()
+    .min(8, "Password is required."),
+});
+
+
+export const checkPasswordSchema = z.object({
+    currentPassword: z
+    .string()
+    .min(8),
+
+    newPassword: z
+    .string()
+    .min(8),
+
+    confirmPassword: z
+    .string()
+    .min(8)
+})
+
+
+.refine(
+    (data) => data.newPassword === data.confirmPassword,{
+        path: ["confirmPassword"],
+        message: "Password do not Match.",
+    }
+);
+
+

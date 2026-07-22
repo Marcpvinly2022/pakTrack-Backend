@@ -1,13 +1,15 @@
 import crypto from "crypto";
 import {prisma} from "../../config/database.js";
 import { AppError} from "../../middlewares/errorHandler.js";
-import { MasterStatus } from "@prisma/client";
-import bcrypt from 'bcrypt';
 import {queueNotification} from "../notification/notification.service.js"
+import { hashPassword } from "../../utils/password.js";
+import { ROLES } from "../constants/roles.js";
+import { authenticateAccount } from "../../services/authentication.service.js";
+
 
 export const createClient = async(clientData, authenticatedUser) => {
     const {firstName, lastName, email, phoneNumber, serviceCategoryId} = clientData;
-    const {tenantId, userId } = authenticatedUser; 
+    const {tenantId, id:userId } = authenticatedUser; 
 
     // Verify service belongs to this tenant
     const service = await prisma.serviceCategory.findFirst({
@@ -16,6 +18,10 @@ export const createClient = async(clientData, authenticatedUser) => {
             tenantId,
             isActive: true,
         },
+        
+        include: {
+            tenant:true,
+        }
     });
 
     if(!service) {
@@ -44,7 +50,10 @@ export const createClient = async(clientData, authenticatedUser) => {
     }
     
     const temporaryPassword = crypto.randomBytes(6).toString("base64url");
-    const passwordHash = await bcrypt.hash(temporaryPassword, 12);
+    const passwordHash = await hashPassword(temporaryPassword);
+
+    console.log("Temporary Password:", temporaryPassword);
+    console.log("Stored Hash:", passwordHash);
 
     const client = await prisma.client.create({
         data: {
@@ -57,7 +66,7 @@ export const createClient = async(clientData, authenticatedUser) => {
             email,
             phoneNumber,
             passwordHash,
-            mostChangePassword: true,
+            mustChangePassword: true,
         },
     });
 
@@ -68,3 +77,54 @@ export const createClient = async(clientData, authenticatedUser) => {
     };
 };
 
+
+
+export const clientLogin = async ({email, password}) => {
+    const user = await prisma.client.findFirst({
+        where: {
+            email,
+            deletedAt: null,
+            
+        },
+
+        include: {
+            tenant: true,
+        }
+
+    });
+
+    if(!user){
+        throw new AppError(
+            401,
+            "INVALID_CREDENTIALS",
+            "Invalid email or password."
+            )
+        }
+
+console.log("===== CLIENT LOGIN =====");
+    console.log("Password received:", password);
+    console.log("User email:", user.email);
+    console.log("authenticateAccount:", authenticateAccount);
+    const token = await authenticateAccount({
+        account: user,
+        password,
+        accountType: "CLIENT",
+    });
+
+    
+
+    return {
+        token, 
+        profile: {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: ROLES.TRAVELLER,
+            agencyName: user.tenant.agencyName,
+            subdomain: user.tenant.subdomain,
+
+
+        }
+    }
+}

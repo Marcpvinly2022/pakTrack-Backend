@@ -8,16 +8,6 @@ import { ROLES } from "../../modules/constants/roles.js";
 
 const router = Router();
 
-/*
-|--------------------------------------------------------------------------
-| Client Registration
-|--------------------------------------------------------------------------
-|
-| Agency Admin
-| Desk Agent
-|
-*/
-
 router.post(
   "/",
   authenticate,
@@ -26,6 +16,14 @@ router.post(
     ROLES.DESK_AGENT
   ),
   clientController.createClient
+);
+router.post(
+  "/login",
+  clientController.clientLogin
+);
+
+
+router.post("/change-password",authenticate,authorize(ROLES.TRAVELLER),clientController.changePassword
 );
 
 export default router;

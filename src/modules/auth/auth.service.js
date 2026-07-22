@@ -1,12 +1,9 @@
 // Used for hashing passwords before storing them.
-import bcrypt from "bcrypt";
-
-// Used for generating JWT access tokens.
-import { generateAccessToken } from "../../utils/jwt.js";
 import { prisma } from "../../config/database.js";
 import { AppError } from "../../middlewares/errorHandler.js";
 import { ROLES } from "../constants/roles.js";
-
+import { authenticateAccount} from "../../services/authentication.service.js";
+import { hashPassword } from "../../utils/password.js";
 export const createRegisterAgency = async ({agencyName,subdomain,email,password}) => {
 
    if (!subdomain) {
@@ -44,9 +41,11 @@ export const createRegisterAgency = async ({agencyName,subdomain,email,password}
       "A user with this email already exists."
     );
   }
-  const SALT_ROUNDS = 12;
 
-  const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+  const passwordHash = await hashPassword(password);
+  
+  
   // Transaction
   // Create:
   // 1. Tenant
@@ -121,55 +120,14 @@ export const agencyLogin = async ({ email, password }) => {
       "Invalid email or password."
     );
   }
-
-  // -----------------------------------------
-  // Compare password with stored hash.
-  // -----------------------------------------
-
-  const passwordMatches = await bcrypt.compare(
-    password,
-    user.passwordHash
-  );
-
-  if (!passwordMatches) {
-    throw new AppError(
-      401,
-      "INVALID_CREDENTIALS",
-      "Invalid email or password."
-    );
-  }
-
-// Determine which signing key to use.
-  const jwtSecret =
-    user.role === "AGENCY_ADMIN" ||
-    user.role === "DESK_AGENT"
-      ? process.env.JWT_SECRET_STAFF
-      : process.env.JWT_SECRET_TRAVELLER;
-  // JWT Payload
-  // Keep payload small.
-  const payload = {
-    userId: user.id,
-
-    tenantId: user.tenantId,
-
-    role: user.role,
-  };
-
+  
   // Generate Access Token
-  const token = generateAccessToken(payload, jwtSecret);
-
-  // Update last login timestamp.
-
-  await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-
-    data: {
-      lastLoginAt: new Date(),
-    },
-  });
-  // Return DTO
+  const token = await authenticateAccount({
+      account: user,
+      password,
+      accountType: "USER",
+    });
+  
 
   return {
     token,

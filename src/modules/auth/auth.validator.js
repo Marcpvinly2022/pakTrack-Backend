@@ -40,3 +40,26 @@ export const loginSchema = z.object({
     .string({ required_error: "Password is required" })
     .min(1, { message: "Password cannot be blank" }),
 });
+
+
+export const checkPasswordSchema = z.object({
+  currentPassword: z
+  .string()
+  .min(8),
+
+  newPassword: z
+  .string()
+  .min(8),
+
+  confirmPassword: z
+  .string()
+  .min(8),
+})
+
+
+.refine(
+  (data) => data.newPassword === data.confirmPassword,{
+    path: ["confirmPassword"],
+    message: "Password do not Match.",
+  }
+);

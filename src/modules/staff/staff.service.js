@@ -1,9 +1,9 @@
-import bcrypt from "bcrypt";
 import {prisma} from "../../config/database.js";
 import {AppError} from "../../middlewares/errorHandler.js";
 import { ROLES } from "../constants/roles.js";
+import { hashPassword } from "../../utils/password.js";
+import { authenticateAccount } from "../../services/authentication.service.js";
 
-const SALT_ROUNDS = 12;
 
 //Create Staff
 export const createStaff = async ({tenantId, email, firstName, lastName, password, role}) => {
@@ -23,7 +23,7 @@ export const createStaff = async ({tenantId, email, firstName, lastName, passwor
         );
     }
 
-    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+    const passwordHash = await hashPassword(password);
 
     const staff = await prisma.user.create({
         data:{
@@ -52,6 +52,55 @@ export const createStaff = async ({tenantId, email, firstName, lastName, passwor
         temporaryPassword: password,
     }
 };
+
+
+export const staffLogin = async ({email, password}) => {
+    const user = await prisma.user.findFirst({
+        where:{
+            email,
+            isActive: true,
+            role:{
+                in: [ROLES.AGENCY_ADMIN, ROLES.DESK_AGENT]
+            },
+        },
+
+        include: {
+            tenant: true
+        }
+    });
+
+    if(!user){
+        throw new AppError(
+            401,
+            "INVALID_CREDENTIALS",
+            "Invalid email or password."
+
+        )
+    }
+
+    const token = await authenticateAccount({
+        account: user,
+        password,
+        accountType: "USER",
+    })
+
+    return {
+    token,
+    profile: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        tenantId: user.role,
+        mustChangePassword: user.mustChangePassword,
+        agencyName: user.tenant?.agencyName ?? null,
+        subdomain: user.tenant?.subdomain ?? null,
+    },
+};
+}
+
+
 
 //get all staff
 export const getAllStaff = async ({tenantId}) => {

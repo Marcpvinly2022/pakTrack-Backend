@@ -1,9 +1,10 @@
 import * as staffService from "./staff.service.js";
 import { AppError } from "../../middlewares/errorHandler.js";
-import { createStaffSchema, updateStaffSchema, staffIdParamSchema } from "./staff.validator.js";
-import { success } from "zod";
+import { createStaffSchema, updateStaffSchema, staffIdParamSchema, checkPasswordSchema, loginStaffSchema } from "./staff.validator.js";
 import { prisma } from "../../config/database.js";
 import {queueNotification} from "../notification/notification.service.js";
+import { successResponse } from "../../utils/apiResponse.js";
+import * as authenticationService from "../../services/authentication.service.js";
 
 //create staff
 export const createStaff = async (req, res, next) => {
@@ -11,7 +12,7 @@ export const createStaff = async (req, res, next) => {
         if (!req.user) {
             throw new AppError(
                 401,
-                "AUTHORIZED",
+                "UNAUTHORIZED",
                 "Authentication is required."
             );
         }
@@ -68,16 +69,51 @@ export const createStaff = async (req, res, next) => {
             },
         });
 
-        return res.status(201).json({
-            success: true,
-            message: "Staff created successfully.",
-            data: result.staff,
-        });
+        return successResponse(
+            res,
+            201,
+            "Staff Created Successfully.",
+            result.staff
+        )
 
     } catch (error) {
         next(error)
     }
 }
+
+
+export const staffLogin = async (req, res, next) => {
+    try{
+        
+
+        const payload = loginStaffSchema.safeParse(req.body)
+
+        if(!payload.success){
+            throw new AppError(
+               400,
+                "VALIDATION_ERROR",
+                payload.error.issues.map((issue) => ({
+                field: issue.path.join("."),
+                message: issue.message
+                }))
+            )
+        }
+
+
+        const staffData = await staffService.staffLogin(payload.data)
+
+        return successResponse(
+            res, 
+            200,
+            "Staff authenticated successfully.",
+            staffData,
+        )
+
+    }catch(error){
+        next(error)
+    }
+}
+
 
 //get all staff
 export const getAllStaff = async (req, res, next) => {
@@ -94,10 +130,13 @@ export const getAllStaff = async (req, res, next) => {
             tenantId: req.user.tenantId
         });
 
-        return res.status(200).json({
-            success: true,
-            data: staff,
-        })
+        return successResponse(
+            res,
+            200,
+            success,
+            staff
+        )
+
     } catch (error) {
         next(error);
     }
@@ -147,13 +186,62 @@ export const updateStaffStatus = async (req, res, next) => {
             isActive: body.data.isActive
         });
 
-        return res.status(200).json({
-            success: true,
-            message: "Staff member status updated successfully.",
-            data: updatedStaff
-        });
+        return successResponse(
+            res,
+            200,
+            success,
+            "Staff member status updated successfully.",
+            updatedStaff,
+
+        )
         
     } catch (error) {
         next(error);
     }
 };
+
+
+export const changePassword = async(req, res, next) => {
+    try{
+        if(!req.body){
+            throw new AppError(
+                401,
+                "UNAUTHORIZED",
+                "Authentication is required."
+
+            )
+        }
+
+        const payload = checkPasswordSchema.safeParse(req.body);
+        if(!payload.success){
+            throw new AppError(
+                401,
+                "VALIDATION_ERROR",
+                payload.error.issues.map((issue) => ({
+                    field: issue.path.join("."),
+                    message: issue.message
+                }))
+
+            )
+        }
+
+        await authenticationService.changePassword({
+            model: req.user.type === "client" ? "client" : "user",
+            id: req.user.id,
+            currentPassword: payload.data.currentPassword,
+            newPassword: payload.data.newPassword,
+        });
+
+         return successResponse(
+            res,
+            200,
+            "Password changed Successfully. ",
+        )
+            
+        
+
+        
+    }catch(error){
+        next(error)
+    }
+}
