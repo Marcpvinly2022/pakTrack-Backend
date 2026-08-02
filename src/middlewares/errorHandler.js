@@ -1,4 +1,5 @@
 import { ZodError } from "zod";
+import { logger } from "../utils/logger.js";
 
 export class AppError extends Error {
     // Fixed: Ensured 'customErrors' is initialized safely as a constructor parameter
@@ -37,7 +38,7 @@ export const errorHandler = (err, req, res, next) => {
     }
 
     // 3. Fallback for unexpected system crashes
-    console.error("[Fatal System Crash]:", err);
+    logger.error("[Fatal System Crash]:", err);
 
     return res.status(500).json({
         success: false,

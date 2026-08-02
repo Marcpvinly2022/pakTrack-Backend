@@ -90,7 +90,48 @@ describe("Auth API", () => {
         // 3. Verify security assertions
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
-        expect(response.body.data).toHaveProperty("token");
+        expect(response.body.data).toHaveProperty("accessToken");
+        expect(response.body.data).toHaveProperty("refreshToken");
         expect(response.body.data.profile.email).toBe("admin@authtravel.com");
+    });
+
+    it("should return the current user profile from /me", async () => {
+        // 1. Seed and log in to obtain a valid access token
+        await request(app)
+            .post("/api/v1/auth/register")
+            .send({
+                agencyName: "Me Endpoint Co",
+                subdomain: "meendpoint",
+                email: "me@meendpoint.com",
+                password: "SecurePassword123!"
+            });
+
+        const login = await request(app)
+            .post("/api/v1/auth/login")
+            .send({
+                email: "me@meendpoint.com",
+                password: "SecurePassword123!"
+            });
+
+        const accessToken = login.body.data.accessToken;
+
+        // 2. Call the authenticated /me endpoint
+        const response = await request(app)
+            .post("/api/v1/auth/me")
+            .set("Authorization", `Bearer ${accessToken}`);
+
+        // 3. Verify the resolved profile
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(true);
+        expect(response.body.data.id).toBeDefined();
+        expect(response.body.data.email).toBe("me@meendpoint.com");
+        expect(response.body.data.role).toBe("AGENCY_ADMIN");
+    });
+
+    it("should reject /me without an access token", async () => {
+        const response = await request(app)
+            .post("/api/v1/auth/me");
+
+        expect(response.status).toBe(401);
     });
 });

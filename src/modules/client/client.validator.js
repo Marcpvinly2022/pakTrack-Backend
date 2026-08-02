@@ -67,6 +67,38 @@ export const loginClientSchema = z.object({
 
 
 
+export const forgotPasswordSchema = z.object({
+    email: z
+        .email("A valid email address is required.")
+        .trim()
+        .toLowerCase(),
+
+    accountType: z.enum([
+        "CLIENT",
+        "USER",
+    ]),
+});
+
+
+export const resetPasswordSchema = z.object({
+
+    token: z
+        .string()
+        .trim()
+        .min(1, "Reset token is required."),
+
+    password: z
+        .string()
+        .min(8, "Password must be at least 8 characters.")
+        .max(100),
+
+    accountType: z.enum([
+        "CLIENT",
+        "USER",
+    ]),
+});
+
+
 export const checkPasswordSchema = z.object({
     currentPassword: z
     .string()
@@ -90,3 +122,5 @@ export const checkPasswordSchema = z.object({
 
     }
 )
+
+

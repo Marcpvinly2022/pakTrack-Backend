@@ -60,15 +60,25 @@ model User {
   passwordHash       String  @db.VarChar(255)
   mustChangePassword Boolean @default(true)
 
-  role Role @default(DESK_AGENT)
+  role           Role @default(DESK_AGENT)
+  sessionVersion Int  @default(1)
 
   isActive Boolean @default(true)
 
-  lastLoginAt DateTime? @db.Timestamptz(6)
+  lastLoginAt         DateTime? @db.Timestamptz(6)
+  failedLoginAttempts Int       @default(0)
+
+  lockedUntil DateTime?
+
+  lastFailedLoginAt DateTime?
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
 
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  updatedAt                DateTime  @updatedAt @db.Timestamptz(6)
+  passwordResetTokenHash   String?
+  passwordResetExpiresAt   DateTime?
+  passwordResetRequestedAt DateTime?
+  passwordResetUsedAt      DateTime?
 
   assignedClients   Client[]   @relation("AssignedClients")
   reviewedDocuments Document[] @relation("ReviewedDocuments")
@@ -167,29 +177,40 @@ enum ClientAccountStatus {
 }
 
 model Client {
-  id                   String              @id @default(uuid()) @db.Uuid
-  tenantId             String              @db.Uuid
-  tenant               Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  email                String              @db.VarChar(255)
-  passwordHash         String?             @db.VarChar(255)
-  lastLoginAt          DateTime?           @db.Timestamptz(6)
-  createdByUserId      String              @db.Uuid
-  createdByUser        User                @relation("CreatedClients", fields: [createdByUserId], references: [id], onDelete: Restrict)
-  serviceCategoryId    String              @db.Uuid
-  assignedDeskAgencyId String              @db.Uuid
-  assignedDeskAgency   User                @relation("AssignedClients", fields: [assignedDeskAgencyId], references: [id], onDelete: Restrict)
-  serviceCategory      ServiceCategory     @relation(fields: [serviceCategoryId], references: [id], onDelete: Restrict)
-  firstName            String              @db.VarChar(100)
-  lastName             String              @db.VarChar(100)
-  phoneNumber          String              @db.VarChar(30) // Stored internationally (+234...)
-  mustChangePassword   Boolean             @default(true)
-  masterStatus         MasterStatus        @default(DOCUMENT_GATHERING)
-  createdAt            DateTime            @default(now()) @db.Timestamptz(6)
-  updatedAt            DateTime            @updatedAt @db.Timestamptz(6)
-  deletedAt            DateTime?           @db.Timestamptz(6)
+  id                       String          @id @default(uuid()) @db.Uuid
+  tenantId                 String          @db.Uuid
+  tenant                   Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email                    String          @db.VarChar(255)
+  passwordHash             String?         @db.VarChar(255)
+  lastLoginAt              DateTime?       @db.Timestamptz(6)
+  createdByUserId          String          @db.Uuid
+  createdByUser            User            @relation("CreatedClients", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  serviceCategoryId        String          @db.Uuid
+  assignedDeskAgencyId     String          @db.Uuid
+  assignedDeskAgency       User            @relation("AssignedClients", fields: [assignedDeskAgencyId], references: [id], onDelete: Restrict)
+  serviceCategory          ServiceCategory @relation(fields: [serviceCategoryId], references: [id], onDelete: Restrict)
+  firstName                String          @db.VarChar(100)
+  lastName                 String          @db.VarChar(100)
+  phoneNumber              String          @db.VarChar(30) // Stored internationally (+234...)
+  mustChangePassword       Boolean         @default(true)
+  masterStatus             MasterStatus    @default(DOCUMENT_GATHERING)
+  createdAt                DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt                DateTime        @updatedAt @db.Timestamptz(6)
+  deletedAt                DateTime?       @db.Timestamptz(6)
+  passwordResetTokenHash   String?
+  passwordResetExpiresAt   DateTime?
+  passwordResetRequestedAt DateTime?
+  passwordResetUsedAt      DateTime?
+
+  failedLoginAttempts Int @default(0)
+
+  lockedUntil DateTime?
+
+  lastFailedLoginAt DateTime?
   //
-  isActive             Boolean             @default(false)
-  accountStatus        ClientAccountStatus @default(INVITED)
+  isActive          Boolean             @default(false)
+  accountStatus     ClientAccountStatus @default(INVITED)
+  sessionVersion    Int                 @default(1)
 
   documents     Document[]
   notifications Notification[]

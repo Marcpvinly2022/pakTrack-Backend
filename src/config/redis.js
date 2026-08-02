@@ -1,6 +1,7 @@
 import { Redis } from 'ioredis';
 import dotenv from 'dotenv';
 import { Queue } from 'bullmq';
+import { logger } from '../utils/logger.js';
 
 dotenv.config();
 
@@ -20,11 +21,11 @@ export const redisClient = new Redis({
 });
 
 redisClient.on('connect', () => {
-    console.log('✔ [Redis Engine]: Distributed key-value store connected successfully.');
+    logger.info('✔ [Redis Engine]: Distributed key-value store connected successfully.');
 });
 
 redisClient.on('error', (err) => {
-    console.log('✖ [Redis Critical Error]: Network broker connection failed:', err.message);
+    logger.warn('✖ [Redis Critical Error]: Network broker connection failed:', err.message);
 });
 
 export const notificationQueue = new Queue("notifications", {

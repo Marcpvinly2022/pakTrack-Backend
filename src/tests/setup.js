@@ -14,8 +14,11 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     try {
-        // 🟩 CRITICAL FIX: Run cleanups independently without wrapping them inside a transaction block.
-        // This avoids locking problems on PgBouncer cloud architectures.
+        // Delete in FK-safe order. Client.createdByUserId -> User is
+        // onDelete: Restrict, so users cannot be removed while clients exist.
+        // Deleting tenants first cascades away clients AND users (both have
+        // onDelete: Cascade on tenantId), leaving nothing to restrict.
+        await prisma.client.deleteMany();
         await prisma.user.deleteMany();
         await prisma.tenant.deleteMany();
     } catch (error) {

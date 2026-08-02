@@ -1,20 +1,41 @@
+// 1. ✅ CRITICAL IMPORT: You must import the pino library at the very top
 import pino from "pino";
-import {env} from "./env";
 
-export const logger = pino ({
-    level: env.NODE_ENV === "production" ? "info": "debug",
+// Define your environment flag variable if you haven't already
+const isProduction = process.env.NODE_ENV === "production";
 
-    transport:
-    env.NODE_ENV !== "production"
-    ?{
-        target: "pino-pretty",
+// 2. ✅ EXPORT STATEMENT: Add "export const logger =" right here
+export const logger = pino({
+    level: process.env.LOG_LEVEL || "info",
 
-        options: {
-            colorize: true,
+    base: {
+        app: "PakTrack",
+        env: process.env.NODE_ENV,
+    },
 
-            translateTime: "Sys:standard",
-            ignore: "pid,hostname",
+    timestamp: pino.stdTimeFunctions.isoTime,
+
+    formatters: {
+        level(label) {
+            return {
+                level: label.toUpperCase(),
+            };
         },
-    }
-    :undefined,
+    },
+
+    serializers: {
+        err: pino.stdSerializers.err,
+        error: pino.stdSerializers.err,
+    },
+
+    transport: !isProduction
+        ? {
+              target: "pino-pretty",
+              options: {
+                  colorize: true,
+                  translateTime: "SYS:standard",
+                  ignore: "pid,hostname",
+              },
+          }
+        : undefined,
 });

@@ -1,8 +1,8 @@
 import express from "express";
 import * as staffController from "./staff.controller.js";
-import { authenticate, authorize } from "../../middlewares/auth.middleware.js";
+import { authenticate, authorize, preVerifyRefreshToken } from "../../middlewares/auth.middleware.js";
 import { ROLES } from "../constants/roles.js";
-
+import { loginLimiter, refreshLimiter, apiLimiter, forgotPasswordLimiter, resetPasswordLimiter } from "../../middlewares/rateLimiter.js";
 const router = express.Router();
 
 //staff
@@ -15,8 +15,12 @@ router.post(
 
 router.post(
     "/login", 
+    loginLimiter,
     staffController.staffLogin,
 );
+
+
+router.use(authenticate, apiLimiter);
 
 router.post(
     "/change-password",
@@ -33,6 +37,19 @@ router.get(
     staffController.getAllStaff
 );
 
+
+router.post(
+    "/forgot-password",
+    forgotPasswordLimiter,
+    staffController.forgetPassword
+);
+
+router.post(
+    "/reset-password",
+    resetPasswordLimiter,
+    staffController.resetPassword
+);
+
 //Activate / Deactivate staff 
 router.patch(
     "/:id/status",
@@ -40,5 +57,14 @@ router.patch(
     authorize(ROLES.AGENCY_ADMIN),
     staffController.updateStaffStatus
 );
+
+
+router.post("/refresh",preVerifyRefreshToken, refreshLimiter, staffController.refreshToken);
+
+router.post(
+    "/logout",
+    staffController.logout
+);
+
 
 export default router;

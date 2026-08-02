@@ -1,5 +1,6 @@
 import { prisma } from '../../config/database.js';
 import { notificationQueue } from '../../jobs/notification.queue.js';
+import { logger } from '../../utils/logger.js';
 
 export const queueNotification = async ({
   tenantId,
@@ -47,7 +48,7 @@ export const queueNotification = async ({
 
    
   }catch(error){
-   console.error("eee")
+   logger.error("eee")
     throw error;
   }
 };

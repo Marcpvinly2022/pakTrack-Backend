@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-
+import { logger } from "../utils/logger.js";
 export const mailTransporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT),
@@ -20,9 +20,9 @@ export const mailTransporter = nodemailer.createTransport({
 export const verifyMailConnection = async () => {
     try{
         await mailTransporter.verify();
-        console.log(" 📧 Mail server connected successfully.")
+        logger.info(" 📧 Mail server connected successfully.")
     }catch(error){
-        console.log("❌ Mail server connection failed.");
+        logger.warn("❌ Mail server connection failed.");
         throw error
     }
 }

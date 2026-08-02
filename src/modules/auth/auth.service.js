@@ -122,7 +122,7 @@ export const agencyLogin = async ({ email, password }) => {
   }
   
   // Generate Access Token
-  const token = await authenticateAccount({
+  const tokens = await authenticateAccount({
       account: user,
       password,
       accountType: "USER",
@@ -130,7 +130,7 @@ export const agencyLogin = async ({ email, password }) => {
   
 
   return {
-    token,
+    ...tokens,
 
     profile: {
       id: user.id,

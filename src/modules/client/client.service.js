@@ -105,7 +105,7 @@ console.log("===== CLIENT LOGIN =====");
     console.log("Password received:", password);
     console.log("User email:", user.email);
     console.log("authenticateAccount:", authenticateAccount);
-    const token = await authenticateAccount({
+    const tokens = await authenticateAccount({
         account: user,
         password,
         accountType: "CLIENT",
@@ -114,7 +114,7 @@ console.log("===== CLIENT LOGIN =====");
     
 
     return {
-        token, 
+        ...tokens, 
         profile: {
             id: user.id,
             email: user.email,

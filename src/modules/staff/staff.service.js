@@ -78,14 +78,14 @@ export const staffLogin = async ({email, password}) => {
         )
     }
 
-    const token = await authenticateAccount({
+    const tokens = await authenticateAccount({
         account: user,
         password,
         accountType: "USER",
     })
 
     return {
-    token,
+    ...tokens,
     profile: {
         id: user.id,
         email: user.email,

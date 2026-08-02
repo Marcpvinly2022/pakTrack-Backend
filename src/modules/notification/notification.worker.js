@@ -4,10 +4,15 @@ import { prisma } from "../../config/database.js";
 import { mailTransporter } from "../../config/mail.js";
 import { welcomeStaffTemplate } from "../../templates/email/welcomeStaff.template.js";
 import { welcomeClientTemplate } from "../../templates/email/welcomeClient.template.js";
+import {passwordResetTemplate} from "../../templates/email/passwordReset.template.js";
+import { securityAlertTemplate } from "../../templates/email/securityAlert.template.js";
+import { logger } from "../../utils/logger.js";
 
 const subjects = {
     STAFF_ACCOUNT_CREATED: "Welcome to PaKTrack",
     CLIENT_ACCOUNT_CREATED: ({ agencyName }) => `Welcome to ${agencyName}`,
+    PASSWORD_RESET: "Reset your PakTrack password",
+    SECURITY_ALERT: "Security alert: unusual activity on your PakTrack account",
 };
 
 
@@ -22,8 +27,8 @@ export const notificationWorker = new Worker(
 
         try {
 
-            console.log(`[Notification Worker] Processing notification ${notificationId}`);
-             // Update notification status.
+            logger.info(`[Notification Worker] Processing notification ${notificationId}`);
+            // Update notification status.
             // PENDING → PROCESSING
             await prisma.notification.update({
                 where: {
@@ -35,7 +40,7 @@ export const notificationWorker = new Worker(
             });
 
 
-            
+
             // Ensure this notification type is supported.
             if (!(type in subjects)) {
                 throw new Error(`Unsupported notification type: ${type}`);
@@ -51,6 +56,13 @@ export const notificationWorker = new Worker(
 
                 case "CLIENT_ACCOUNT_CREATED":
                     html = welcomeClientTemplate(payload);
+                    break;
+                case "PASSWORD_RESET":
+                    html = passwordResetTemplate(payload);
+                    break;
+
+                case "SECURITY_ALERT":
+                    html = securityAlertTemplate(payload);
                     break;
 
                 default:
@@ -81,10 +93,10 @@ export const notificationWorker = new Worker(
                     sentAt: new Date(),
                 }
             })
-            console.log(`[Notification Worker] Email sent to ${payload.email}`);
+            logger.info(`[Notification Worker] Email sent to ${payload.email}`);
 
         } catch (error) {
-            console.error(`[Notification Worker] Failed notification ${notificationId}`, error);
+            logger.error(`[Notification Worker] Failed notification ${notificationId}`, error);
             await prisma.notification.update({
                 where: {
                     id: notificationId,
@@ -92,7 +104,7 @@ export const notificationWorker = new Worker(
 
                 data: {
                     status: "FAILED"
-                    
+
                 },
             })
             throw error;
@@ -109,10 +121,10 @@ export const notificationWorker = new Worker(
 
 
 notificationWorker.on("completed", (job) => {
-    console.log(`Job ${job.id} completed.`);
+    logger.info(`Job ${job.id} completed.`);
 });
 
 notificationWorker.on("failed", (job, err) => {
-    console.error(`Job ${job?.id} failed.`, err);
+    logger.info(`Job ${job?.id} failed.`, err);
 });
 

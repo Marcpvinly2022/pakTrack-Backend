@@ -1,0 +1,271 @@
+{"level":"INFO","time":"2026-07-31T13:28:59.871Z","app":"PakTrack","msg":"🔍 DEBUG: DATABASE_URL value is ->"}
+{"level":"INFO","time":"2026-07-31T13:28:59.872Z","app":"PakTrack","msg":"🔌 Attempting to connect to database..."}
+{"level":"INFO","time":"2026-07-31T13:29:00.038Z","app":"PakTrack","msg":"✅ Database connection established"}
+{"level":"INFO","time":"2026-07-31T13:29:00.112Z","app":"PakTrack","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-07-31T13:29:02.260Z","app":"PakTrack","msg":" 📧 Mail server connected successfully."}
+{"level":"INFO","time":"2026-07-31T13:29:02.264Z","app":"PakTrack","msg":"🚀 [PakTrack Core Boot]: Server listening on port: 5000"}
+{"level":"INFO","time":"2026-07-31T13:29:02.264Z","app":"PakTrack","msg":"⚙ [Environment Mode]: Running in development configuration"}
+{"level":"INFO","time":"2026-07-31T13:29:43.055Z","app":"PakTrack","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-07-31T13:29:43.056Z","app":"PakTrack","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-07-31T13:29:43.058Z","app":"PakTrack","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-07-31T13:45:24.682Z","app":"PakTrack","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-07-31T13:45:24.684Z","app":"PakTrack","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-07-31T13:45:24.686Z","app":"PakTrack","msg":"Stored Set:"}
+{"level":"WARN","time":"2026-07-31T13:55:58.574Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T13:55:58.951Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T13:55:59.335Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T13:55:59.617Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T13:55:59.943Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T13:56:00.346Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T13:56:00.721Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T13:56:01.092Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T13:56:01.501Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T13:56:01.958Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T13:56:02.463Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:06:41.963Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:06:42.935Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:06:43.620Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:06:44.659Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:06:45.685Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"INFO","time":"2026-07-31T14:06:48.073Z","app":"PakTrack","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"WARN","time":"2026-07-31T14:28:37.712Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:28:47.790Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:28:57.920Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"INFO","time":"2026-07-31T14:28:58.080Z","app":"PakTrack","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"WARN","time":"2026-07-31T14:30:12.215Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:14.381Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:16.597Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:19.103Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:21.415Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:23.795Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:26.227Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:28.664Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:31.167Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:33.697Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:36.310Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:46.928Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:30:57.610Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-07-31T14:31:08.345Z","app":"PakTrack","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"INFO","time":"2026-07-31T14:31:17.979Z","app":"PakTrack","msg":"\n⚠ [SIGINT Received]: Commencing structural server engine shutdown..."}
+{"level":"WARN","time":"2026-08-01T23:38:46.460Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:38:56.542Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:39:06.664Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:39:16.873Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:39:27.091Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:39:37.370Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:39:47.698Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:39:58.058Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:40:08.476Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:40:18.944Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:40:29.459Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:40:40.031Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:40:50.671Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:41:01.352Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:41:12.074Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:41:42.264Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"WARN","time":"2026-08-01T23:41:52.345Z","app":"PakTrack","env":"test","msg":"✖ [Redis Critical Error]: Network broker connection failed:"}
+{"level":"INFO","time":"2026-08-01T23:53:01.086Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-01T23:53:41.707Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-01T23:53:41.709Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-01T23:53:41.711Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-01T23:54:02.370Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-01T23:54:33.531Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-01T23:54:33.533Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-01T23:54:33.535Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-01T23:58:56.706Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-01T23:59:18.735Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-01T23:59:18.738Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-01T23:59:18.740Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:00:31.698Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:01:01.577Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:01:01.578Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:01:01.579Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:01:41.815Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:02:03.386Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:02:03.387Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:02:03.389Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:02:07.478Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:02:07.479Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:02:07.480Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:02:11.762Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:02:11.764Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:02:11.765Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:02:15.848Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:02:15.849Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:02:15.850Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:02:19.927Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:02:19.929Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:02:19.930Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:02:21.950Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:02:50.741Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:02:50.742Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:02:50.743Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:03:57.605Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:04:19.620Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:04:19.621Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:04:19.623Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:04:24.092Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:04:24.093Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:04:24.094Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:04:28.724Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:04:28.726Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:04:28.727Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:04:32.802Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:04:32.804Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:04:32.805Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"ERROR","time":"2026-08-02T00:04:33.778Z","app":"PakTrack","env":"development","msg":"[Fatal System Crash]:"}
+{"level":"INFO","time":"2026-08-02T00:04:37.613Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:04:37.614Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:04:37.615Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:04:40.031Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:05:08.895Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:05:08.896Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:05:08.897Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:05:47.447Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:06:11.418Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:06:11.419Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:06:11.420Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:07:57.749Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:08:20.523Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:08:20.524Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:08:20.525Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:08:26.555Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:08:26.556Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:08:26.557Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:08:32.918Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:08:32.919Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:08:32.921Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:08:37.044Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:08:37.045Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:08:37.046Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"ERROR","time":"2026-08-02T00:08:37.986Z","app":"PakTrack","env":"development","msg":"[Fatal System Crash]:"}
+{"level":"INFO","time":"2026-08-02T00:08:41.790Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:08:41.792Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:08:41.793Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"ERROR","time":"2026-08-02T00:08:44.561Z","app":"PakTrack","env":"development","msg":"[Fatal System Crash]:"}
+{"level":"INFO","time":"2026-08-02T00:08:46.124Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:09:14.526Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:09:14.527Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:09:14.529Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:10:44.727Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:11:06.100Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:11:06.102Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:11:06.103Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"ERROR","time":"2026-08-02T00:11:07.126Z","app":"PakTrack","env":"development","msg":"[Fatal System Crash]:"}
+{"level":"INFO","time":"2026-08-02T00:11:13.662Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:11:35.382Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:11:35.392Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:11:35.399Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:13:33.107Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:13:54.027Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:13:54.028Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:13:54.029Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"ERROR","time":"2026-08-02T00:13:54.991Z","app":"PakTrack","env":"development","msg":"[Fatal System Crash]:"}
+{"level":"INFO","time":"2026-08-02T00:15:05.880Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:15:27.394Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:15:27.395Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:15:27.396Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:15:32.970Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:15:32.972Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:15:32.973Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:15:39.129Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:15:39.130Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:15:39.132Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:15:43.136Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:15:43.138Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:15:43.139Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:15:47.944Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:15:47.951Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:15:47.979Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:15:52.492Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:16:20.820Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:16:20.822Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:16:20.823Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:18:13.362Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:18:34.748Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:18:34.750Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:18:34.751Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:18:40.571Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:18:40.572Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:18:40.573Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:18:46.735Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:18:46.736Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:18:46.739Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:18:50.807Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:18:50.808Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:18:50.809Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:18:55.559Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:18:55.560Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:18:55.561Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:19:00.195Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:19:28.662Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:19:28.664Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:19:28.666Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:24:52.410Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:25:24.288Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:25:55.066Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:25:55.068Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:25:55.069Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:25:59.102Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:25:59.105Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:25:59.118Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:26:25.063Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:26:54.405Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:26:54.406Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:26:54.407Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:26:58.687Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:26:58.688Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:26:58.689Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:27:19.630Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:27:48.590Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:27:48.592Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:27:48.594Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:27:52.646Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:27:52.647Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:27:52.648Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:28:16.091Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:28:37.621Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:28:37.623Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:28:37.624Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:28:43.615Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:28:43.616Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:28:43.618Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:28:50.177Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:28:50.178Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:28:50.180Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:28:54.342Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:28:54.343Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:28:54.344Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:28:59.358Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:28:59.360Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:28:59.361Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:29:04.834Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:29:33.599Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:29:33.600Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:29:33.601Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:29:37.587Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:29:37.588Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:29:37.590Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:31:22.174Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:31:43.989Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:31:43.990Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:31:43.991Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:31:49.616Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:31:49.617Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:31:49.618Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:31:55.717Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:31:55.721Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:31:55.725Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:31:59.938Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:31:59.939Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:31:59.940Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:32:04.738Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:32:04.739Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:32:04.742Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:32:09.565Z","app":"PakTrack","env":"development","msg":"✔ [Redis Engine]: Distributed key-value store connected successfully."}
+{"level":"INFO","time":"2026-08-02T00:32:39.354Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:32:39.356Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:32:39.357Z","app":"PakTrack","env":"development","msg":"Stored Set:"}
+{"level":"INFO","time":"2026-08-02T00:32:43.669Z","app":"PakTrack","env":"development","msg":"MULTI RESULT:"}
+{"level":"INFO","time":"2026-08-02T00:32:43.671Z","app":"PakTrack","env":"development","msg":"Stored Value:"}
+{"level":"INFO","time":"2026-08-02T00:32:43.677Z","app":"PakTrack","env":"development","msg":"Stored Set:"}

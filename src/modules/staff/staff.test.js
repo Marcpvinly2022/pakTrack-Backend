@@ -26,7 +26,7 @@ beforeEach(async () => {
             password: "Password123!",
         });
 
-    adminToken = login.body.data.token;  
+    adminToken = login.body.data.accessToken;
 });
 
 describe("POST /staff", () => {
@@ -37,6 +37,8 @@ describe("POST /staff", () => {
             .send({
                 email: "agent1@test.com",
                 password: "Password123!",
+                firstName: "Ada",
+                lastName: "Lovelace",
                 role: "DESK_AGENT",
             });
 
@@ -55,6 +57,8 @@ describe("POST /staff", () => {
             .send({
                 email: "agent1@test.com",
                 password: "Password123!",
+                firstName: "Ada",
+                lastName: "Lovelace",
                 role: "DESK_AGENT",
             });
 
@@ -64,6 +68,8 @@ describe("POST /staff", () => {
             .send({
                 email: "agent1@test.com",
                 password: "Password123!",
+                firstName: "Ada",
+                lastName: "Lovelace",
                 role: "DESK_AGENT",
             });
 
@@ -105,6 +111,8 @@ describe("PATCH /staff/:id/status", () => {
             .send({
                 email: "deactivate-me@test.com",
                 password: "Password123!",
+                firstName: "Grace",
+                lastName: "Hopper",
                 role: "DESK_AGENT",
             });
 

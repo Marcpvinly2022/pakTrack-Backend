@@ -2,8 +2,9 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    // 🟩 CRITICAL FIX: Tell Vitest to load your setup file automatically before any test runs
-    setupFiles: ["./src/tests/setup.js"],
+    // loadEnv.js MUST come first: it loads .env.test (override) before
+    // setup.js imports config/database.js, which reads the DB URL at import time.
+    setupFiles: ["./src/tests/loadEnv.js", "./src/tests/setup.js"],
     
     // Disables parallel file execution so database clearing hooks don't fight each other
     fileParallelism: false, 
