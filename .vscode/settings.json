@@ -1,2 +1,24 @@
 {
+    "sqltools.connections": [
+        {
+            "pgOptions": {
+                "ssl": {
+                    "rejectUnauthorized": true
+                }
+            },
+            "ssh": "Disabled",
+            "previewLimit": 10,
+            "server": "ep-wild-forest-atw4ywr7-pooler.c-9.us-east-1.aws.neon.tech",
+            "port": 5432,
+            "sshOptions": {
+                "port": 22
+            },
+            "driver": "PostgreSQL",
+            "name": "PakTrack",
+            "group": "postgre",
+            "database": "neondb",
+            "username": "neondb_owner",
+            "password": "npg_A2OFWIXCzBE6"
+        }
+    ]
 }

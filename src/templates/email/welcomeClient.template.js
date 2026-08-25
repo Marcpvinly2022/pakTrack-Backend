@@ -2,7 +2,6 @@ export const welcomeClientTemplate = ({
   agencyName,
   clientName,
   deskAgent,
-  serviceName,
   email,
   temporaryPassword,
   loginUrl,
@@ -40,16 +39,12 @@ export const welcomeClientTemplate = ({
                 Your service portal profile has been successfully provisioned. We are preparing your case files and have created your official portal timeline access below.
               </p>
 
-              <!-- Assignment Grid Context Split -->
+              <!-- Assignment Context (service intentionally omitted — no application exists at onboarding) -->
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 28px; border-bottom: 1px solid #f3f4f6; padding-bottom: 20px;">
                 <tr>
-                  <td width="50%" valign="top" style="padding-right: 10px;">
+                  <td valign="top">
                     <span style="font-size: 11px; text-transform: uppercase; color: #9ca3af; font-weight: 600; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Assigned Consultant</span>
                     <span style="font-size: 14px; color: #1f2937; font-weight: 600;">${deskAgent}</span>
-                  </td>
-                  <td width="50%" valign="top" style="padding-left: 10px;">
-                    <span style="font-size: 11px; text-transform: uppercase; color: #9ca3af; font-weight: 600; letter-spacing: 0.5px; display: block; margin-bottom: 4px;">Requested Service</span>
-                    <span style="font-size: 14px; color: #1f2937; font-weight: 600;">${serviceName}</span>
                   </td>
                 </tr>
               </table>

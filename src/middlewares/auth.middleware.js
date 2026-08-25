@@ -42,9 +42,14 @@ export const authenticate = async (req, res, next) => {
                 "Account no longer exists."
             );
         }
+        const pathToCheck = req.originalUrl || req.path || "";
+        const isChangingPassword = /change-password/i.test(pathToCheck);
 
+        // 🔍 DEBUG TRACE TELEMETRY (Look at your terminal console when you hit send!)
+        console.log(`📡 [PakTrack Middleware Debug]: Incoming URL -> ${pathToCheck}`);
+        console.log(`🛡️ [PakTrack Middleware Debug]: Is Password Change Detected? -> ${isChangingPassword}`);
         // Reject disabled accounts.
-        if (!account.isActive) {
+        if (!account.isActive && !isChangingPassword) {
             throw new AppError(
                 403,
                 "ACCOUNT_DISABLED",
@@ -59,10 +64,13 @@ export const authenticate = async (req, res, next) => {
                 "Your session has expired. Please sign in again."
             );
         }
+
+        
         // Extra validation for clients.
         if (
             model === "client" &&
-            account.accountStatus !== "ACTIVE"
+            account.accountStatus !== "ACTIVE" &&
+            !isChangingPassword
         ) {
             throw new AppError(
                 403,

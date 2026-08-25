@@ -100,7 +100,7 @@ export const createRegisterAgency = async ({agencyName,subdomain,email,password}
 // Login User
 // =============================================
 
-export const agencyLogin = async ({ email, password }) => {
+export const agencyLogin = async ({ email, password, req }) => {
   
   // Find user including tenant.
   const user = await prisma.user.findFirst({
@@ -125,9 +125,11 @@ export const agencyLogin = async ({ email, password }) => {
   const tokens = await authenticateAccount({
       account: user,
       password,
-      accountType: "USER",
+      portal: "ADMIN",
+      req
     });
-  
+
+    
 
   return {
     ...tokens,

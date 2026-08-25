@@ -34,9 +34,15 @@ model Tenant {
   updatedAt     DateTime       @updatedAt @db.Timestamptz(6)
   notifications Notification[]
 
-  users    User[]
-  services ServiceCategory[]
-  clients  Client[]
+  clientAssignments    ClientAssignment[]
+  users                User[]
+  services             ServiceCategory[]
+  service              Service[]
+  clients              Client[]
+  clientservices       ClientService[]
+  documentRequirements DocumentRequirement[]
+  documents            Document[]
+  documentReviews      DocumentReview[]
 }
 
 enum Role {
@@ -80,16 +86,71 @@ model User {
   passwordResetRequestedAt DateTime?
   passwordResetUsedAt      DateTime?
 
-  assignedClients   Client[]   @relation("AssignedClients")
+  assignedClients Client[] @relation("AssignedClients")
+
+  clientAssignmentsFrom ClientAssignment[] @relation("PreviousDeskAgent")
+
+  clientAssignmentsTo ClientAssignment[] @relation("NewDeskAgent")
+
+  clientReassignments ClientAssignment[] @relation("ReassignedBy")
+
+  createdClientServices ClientService[] @relation("CreatedClientServices")
+
   reviewedDocuments Document[] @relation("ReviewedDocuments")
   createdClients    Client[]   @relation("CreatedClients")
 
-  verifiedTransactions Transaction[]  @relation("VerifiedTransactions")
-  notifications        Notification[]
+  verifiedTransactions Transaction[] @relation("VerifiedTransactions")
+
+  createdRequirements    DocumentRequirement[] @relation("CreatedRequirements")
+  staffUploadedDocuments Document[]            @relation("StaffUploadedDocuments")
+  documentReviews        DocumentReview[]      @relation("DocumentReviewer")
+
+  notifications Notification[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
   @@index([role])
+}
+
+enum ClientAssignmentReason {
+  INITIAL_ASSIGNMENT
+  DESK_AGENT_DEACTIVATED
+  PERFORMANCE_ISSUE
+  WORKLOAD_REDISTRIBUTION
+  ADMIN_REASSIGNMENT
+}
+
+model ClientAssignment {
+  id String @id @default(uuid()) @db.Uuid
+
+  tenantId String @db.Uuid
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  clientId String @db.Uuid
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  previousDeskAgentId String? @db.Uuid
+  previousDeskAgent   User?   @relation("PreviousDeskAgent", fields: [previousDeskAgentId], references: [id], onDelete: SetNull)
+
+  newDeskAgentId String @db.Uuid
+  newDeskAgent   User   @relation("NewDeskAgent", fields: [newDeskAgentId], references: [id], onDelete: Restrict)
+
+  reassignedById String @db.Uuid
+  reassignedBy   User   @relation("ReassignedBy", fields: [reassignedById], references: [id], onDelete: Restrict)
+
+  reason ClientAssignmentReason
+
+  notes String? @db.Text
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([tenantId])
+  @@index([clientId])
+  @@index([previousDeskAgentId])
+  @@index([newDeskAgentId])
+  @@index([reassignedById])
+  @@index([createdAt])
 }
 
 // ==========================================
@@ -97,54 +158,54 @@ model User {
 // =================
 
 model ServiceCategory {
+  id          String  @id @default(uuid()) @db.Uuid
+  tenantId    String  @db.Uuid
+  name        String
+  description String?
+  isActive    Boolean @default(true)
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+  deletedAt DateTime? @db.Timestamptz(6)
+  services  Service[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([isActive])
+}
+
+model Service {
   id String @id @default(uuid()) @db.Uuid
 
-  tenantId String @db.Uuid
+  tenantId          String @db.Uuid
+  serviceCategoryId String @db.Uuid
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
 
-  serviceName String @db.VarChar(255)
+  basePrice Decimal? @db.Decimal(12, 2)
+  currency  String   @default("NGN")
 
-  baseCostNaira Decimal @db.Decimal(12, 2)
+  estimatedProcessingDays Int?
 
   isActive Boolean @default(true)
 
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+  deletedAt DateTime? @db.Timestamptz(6)
 
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  tenant          Tenant          @relation(fields: [tenantId], references: [id])
+  serviceCategory ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
 
-  templateItems ChecklistItemTemplate[]
+  clientService ClientService[]
 
-  clients Client[]
-
-  @@unique([tenantId, serviceName])
+  @@unique([tenantId, serviceCategoryId, name])
   @@index([tenantId])
-}
-
-model ChecklistItemTemplate {
-  id String @id @default(uuid()) @db.Uuid
-
-  serviceCategoryId String @db.Uuid
-
-  serviceCategory ServiceCategory @relation(fields: [serviceCategoryId], references: [id], onDelete: Cascade)
-
-  documentName String @db.VarChar(255)
-
-  description String? @db.Text
-
-  displayOrder Int
-
-  isRequired Boolean @default(true)
-
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-
-  documents Document[] // <-- ADD THIS
-
-  @@unique([serviceCategoryId, documentName])
-  @@unique([serviceCategoryId, displayOrder])
   @@index([serviceCategoryId])
+  @@index([isActive])
+  @@map("services")
 }
 
 // ==========================================
@@ -177,101 +238,113 @@ enum ClientAccountStatus {
 }
 
 model Client {
-  id                       String          @id @default(uuid()) @db.Uuid
-  tenantId                 String          @db.Uuid
-  tenant                   Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  email                    String          @db.VarChar(255)
-  passwordHash             String?         @db.VarChar(255)
-  lastLoginAt              DateTime?       @db.Timestamptz(6)
-  createdByUserId          String          @db.Uuid
-  createdByUser            User            @relation("CreatedClients", fields: [createdByUserId], references: [id], onDelete: Restrict)
-  serviceCategoryId        String          @db.Uuid
-  assignedDeskAgencyId     String          @db.Uuid
-  assignedDeskAgency       User            @relation("AssignedClients", fields: [assignedDeskAgencyId], references: [id], onDelete: Restrict)
-  serviceCategory          ServiceCategory @relation(fields: [serviceCategoryId], references: [id], onDelete: Restrict)
-  firstName                String          @db.VarChar(100)
-  lastName                 String          @db.VarChar(100)
-  phoneNumber              String          @db.VarChar(30) // Stored internationally (+234...)
-  mustChangePassword       Boolean         @default(true)
-  masterStatus             MasterStatus    @default(DOCUMENT_GATHERING)
-  createdAt                DateTime        @default(now()) @db.Timestamptz(6)
-  updatedAt                DateTime        @updatedAt @db.Timestamptz(6)
-  deletedAt                DateTime?       @db.Timestamptz(6)
+  id String @id @default(uuid()) @db.Uuid
+
+  // TENANT OWNERSHIP
+  tenantId String @db.Uuid
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // CLIENT AUTHENTICATION
+  email              String              @db.VarChar(255)
+  passwordHash       String?             @db.VarChar(255)
+  mustChangePassword Boolean             @default(true)
+  sessionVersion     Int                 @default(1)
+  lastLoginAt        DateTime?           @db.Timestamptz(6)
+  accountStatus      ClientAccountStatus @default(INVITED)
+
+  // CLIENT CREATION
+  createdByUserId String @db.Uuid
+  createdByUser   User   @relation("CreatedClients", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  // CLIENT MANAGEMENT / ASSIGNMENT
+  assignedDeskAgentId String @db.Uuid
+  assignedDeskAgent   User   @relation("AssignedClients", fields: [assignedDeskAgentId], references: [id], onDelete: Restrict)
+
+  //Personal Infromation
+  firstName   String  @db.VarChar(100)
+  lastName    String  @db.VarChar(100)
+  phoneNumber String  @db.VarChar(30) // Stored internationally (+234...)
+  isActive    Boolean @default(false)
+
+  // TIMESTAMPS
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+  deletedAt DateTime? @db.Timestamptz(6)
+
+  // PASSWORD RESET
   passwordResetTokenHash   String?
   passwordResetExpiresAt   DateTime?
   passwordResetRequestedAt DateTime?
   passwordResetUsedAt      DateTime?
 
-  failedLoginAttempts Int @default(0)
+  // SECURITY / ACCOUNT LOCKOUT
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  lastFailedLoginAt   DateTime?
 
-  lockedUntil DateTime?
+  // RELATIONSHIPS
+  assignmentHistory ClientAssignment[]
+  notifications     Notification[]
+  clientServices    ClientService[]
 
-  lastFailedLoginAt DateTime?
-  //
-  isActive          Boolean             @default(false)
-  accountStatus     ClientAccountStatus @default(INVITED)
-  sessionVersion    Int                 @default(1)
-
-  documents     Document[]
-  notifications Notification[]
-  transactions  Transaction[]
+  uploadedDocuments Document[] @relation("UploadedDocuments")
 
   @@index([tenantId])
-  @@index([assignedDeskAgencyId])
+  @@index([assignedDeskAgentId])
   @@index([createdByUserId])
-  @@index([masterStatus])
   @@index([accountStatus])
 }
 
-// ==========================================
-// DOCUMENT TRACKING AND PIPELINE EXECUTION MATRICES
-// ==========================================
-
-enum DocStatus {
-  PENDING_UPLOAD
-  PENDING_REVIEW
-  APPROVED
-  REJECTED
+enum ClientServiceStatus {
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  CANCELLED
 }
 
-model Document {
+model ClientService {
   id String @id @default(uuid()) @db.Uuid
 
+  // TENANT ISOLATION
+  tenantId String @db.Uuid
+  tenant   Tenant @relation(fields: [tenantId], references: [id])
+
+  // CLIENT
   clientId String @db.Uuid
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
-  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  // WHO CREATED THIS APPLICATION
+  createdByUserId String @db.Uuid
+  createdByUser   User   @relation("CreatedClientServices", fields: [createdByUserId], references: [id], onDelete: Restrict)
 
-  checklistTemplateId String @db.Uuid
+  // SELECTED SERVICE
+  serviceId String  @db.Uuid
+  service   Service @relation(fields: [serviceId], references: [id])
 
-  checklistTemplate ChecklistItemTemplate @relation(fields: [checklistTemplateId], references: [id], onDelete: Restrict)
+  // APPLICATION WORKFLOW
+  masterStatus MasterStatus @default(DOCUMENT_GATHERING)
 
-  status DocStatus @default(PENDING_UPLOAD)
+  // APPLICATION LIFECYCLE
+  status ClientServiceStatus @default(ACTIVE)
 
-  storageKey String? @db.VarChar(512)
+  documentRequirements DocumentRequirement[]
 
-  rejectionReason  String? @db.Text
-  originalFileName String? @db.VarChar(255)
+  // APPLICATION DATA
+  documents    Document[]
+  transactions Transaction[]
 
-  mimeType String? @db.VarChar(100)
-
-  fileSize Int?
-
-  version Int @default(1)
-
-  reviewedAt DateTime?
-
-  reviewedById String? @db.Uuid
-
-  reviewedBy User? @relation("ReviewedDocuments", fields: [reviewedById], references: [id])
-
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-
+  // TIMESTAMPS
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
   deletedAt DateTime? @db.Timestamptz(6)
 
+  @@unique([clientId, serviceId])
+  @@index([tenantId])
   @@index([clientId])
+  @@index([serviceId])
   @@index([status])
+  @@index([masterStatus])
+  @@index([tenantId, clientId])
 }
 
 // ==========================================
@@ -287,9 +360,9 @@ enum TxStatus {
 model Transaction {
   id String @id @default(uuid()) @db.Uuid
 
-  clientId String @db.Uuid
+  clientServiceId String @db.Uuid
 
-  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientService ClientService @relation(fields: [clientServiceId], references: [id], onDelete: Cascade)
 
   amountPaid Decimal @db.Decimal(12, 2)
 
@@ -313,7 +386,7 @@ model Transaction {
 
   deletedAt DateTime? @db.Timestamptz(6)
 
-  @@index([clientId])
+  @@index([clientServiceId])
   @@index([status])
   @@index([verifiedById])
 }
@@ -401,4 +474,182 @@ model Notification {
   sentAt DateTime?
 
   createdAt DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model Audit {
+  id        String  @id @default(uuid())
+  actorId   String?
+  actorType String?
+
+  action     String
+  resource   String
+  resourceId String?
+  status     String?
+
+  ipAddress String?
+  userAgent String?
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([actorId])
+  @@index([action])
+  @@index([resource])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// CHANGED — replaces your current 4-value DocStatus.
+// NOTE: NOT_UPLOADED is NOT here — under Decision A a Document row only exists
+// after an upload, so "not uploaded" is derived at the requirement level (zero docs).
+// ==========================================
+// DOCUMENT TRACKING AND PIPELINE EXECUTION MATRICES
+// ==========================================
+enum DocStatus {
+  UPLOADED // file received, awaiting review
+  UNDER_REVIEW // a reviewer has it open
+  CORRECTION_REQUIRED // needs a fix — client must resubmit (new version)
+  RESUBMITTED // a newer version arrived after a correction
+  APPROVED
+  REJECTED
+  NOT_APPLICABLE // this uploaded file was deemed N/A on review
+}
+
+// NEW — the checklist item's lifecycle.
+enum RequirementStatus {
+  ACTIVE // counts toward the gate when isRequired = true
+  INACTIVE // deactivated: removed from the checklist, kept for history (no hard delete)
+  REPLACED // superseded by another requirement (linked via replacedByRequirement)
+  NOT_APPLICABLE // authorized exception — a real requirement that doesn't apply to THIS client
+  COMPLETED // satisfied by an approved doc (derivable, but explicit is convenient)
+}
+
+// NEW — a review decision is not the same as a document's lifecycle status,
+// so it gets its own small enum (keeps the decision field from accepting UPLOADED, etc.).
+enum ReviewDecision {
+  APPROVED
+  CORRECTION_REQUIRED
+  REJECTED
+  NOT_APPLICABLE
+}
+
+model DocumentRequirement {
+  id String @id @default(uuid()) @db.Uuid
+
+  // TENANT ISOLATION
+  tenantId String @db.Uuid
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // THE APPLICATION CASE THIS ITEM BELONGS TO (each case owns its independent checklist)
+  clientServiceId String        @db.Uuid
+  clientService   ClientService @relation(fields: [clientServiceId], references: [id], onDelete: Cascade)
+
+  // ITEM DEFINITION
+  title        String  @db.VarChar(255) // "Passport bio page", "6-month bank statement"
+  instruction  String? @db.Text // guidance shown to the client
+  isRequired   Boolean @default(true) // required items gate the case; optional never blocks
+  displayOrder Int     @default(0) // ordering in the checklist UI
+
+  // LIFECYCLE
+  status RequirementStatus @default(ACTIVE)
+
+  // REPLACEMENT LINK (1:1) — old.replacedByRequirement = new ; new.replaces = old
+  replacedByRequirementId String?              @unique @db.Uuid
+  replacedByRequirement   DocumentRequirement? @relation("RequirementReplacement", fields: [replacedByRequirementId], references: [id], onDelete: SetNull)
+  replaces                DocumentRequirement? @relation("RequirementReplacement")
+
+  // WHO ADDED IT (staff)
+  createdByUserId String @db.Uuid
+  createdByUser   User   @relation("CreatedRequirements", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  // UPLOADED FILES (versions) ANSWERING THIS ITEM
+  documents Document[]
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+  deletedAt DateTime? @db.Timestamptz(6) // optional: status INACTIVE/REPLACED is your real soft-remove; kept for parity
+
+  @@index([tenantId])
+  @@index([clientServiceId])
+  @@index([status])
+  @@index([clientServiceId, status]) // "active items on this case"
+}
+
+model Document {
+  id String @id @default(uuid()) @db.Uuid
+
+  // TENANT ISOLATION — NEW (denormalized for direct scoping/indexing)
+  tenantId String @db.Uuid
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // THE CHECKLIST ITEM THIS FILE ANSWERS — NEW parent
+  requirementId String              @db.Uuid
+  requirement   DocumentRequirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+
+  // THE CASE — kept (denormalized): cheap case-level queries; keep in sync with requirement.clientServiceId
+  clientServiceId String        @db.Uuid
+  clientService   ClientService @relation(fields: [clientServiceId], references: [id], onDelete: Cascade)
+
+  // VERSIONING — each upload is a NEW row sharing requirementId; latest APPROVED = the accepted doc
+  version Int       @default(1)
+  status  DocStatus @default(UPLOADED)
+
+  // CLOUDINARY POINTERS — NEW (never exposed raw to clients; delivered via signed, time-limited URLs)
+  cloudinaryPublicId  String? @db.VarChar(512)
+  cloudinarySecureUrl String? @db.VarChar(1024)
+
+  originalFileName String? @db.VarChar(255)
+  mimeType         String? @db.VarChar(100)
+  fileSize         Int?
+
+  // WHO UPLOADED — NEW. Exactly one of these is set.
+  // (Swap this whole block for uploaderType/uploaderId if you prefer the polymorphic style.)
+  uploadedByClientId String? @db.Uuid
+  uploadedByClient   Client? @relation("UploadedDocuments", fields: [uploadedByClientId], references: [id], onDelete: SetNull)
+  uploadedByUserId   String? @db.Uuid
+  uploadedByUser     User?   @relation("StaffUploadedDocuments", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+
+  // LATEST-REVIEW CACHE — optional denormalization (full trail lives in DocumentReview).
+  // Drop these three if you'd rather always read the latest decision from DocumentReview.
+  lastReviewNote String?   @db.Text // was rejectionReason — now covers CORRECTION/REJECT/N-A notes
+  reviewedAt     DateTime?
+  reviewedById   String?   @db.Uuid
+  reviewedBy     User?     @relation("ReviewedDocuments", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  reviews DocumentReview[]
+
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(6)
+  deletedAt DateTime? @db.Timestamptz(6)
+
+  @@index([tenantId])
+  @@index([requirementId])
+  @@index([clientServiceId])
+  @@index([status])
+  @@index([requirementId, version]) // latest-version lookup per requirement
+}
+
+model DocumentReview {
+  id String @id @default(uuid()) @db.Uuid
+
+  tenantId String @db.Uuid
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  documentId String   @db.Uuid
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  reviewerId String @db.Uuid
+  reviewer   User   @relation("DocumentReviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  decision ReviewDecision
+  note     String?        @db.Text // enforce "required" in the SERVICE for CORRECTION_REQUIRED / REJECTED / NOT_APPLICABLE
+
+  // Append-only: NO updatedAt, NO deletedAt — "correction never erases history"
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([tenantId])
+  @@index([documentId])
+  @@index([reviewerId])
+  @@index([documentId, createdAt]) // "history for this doc, newest first"
 }

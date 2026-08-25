@@ -4,12 +4,13 @@ import { prisma } from "../config/database.js";
 import { AppError } from "../middlewares/errorHandler.js";
 import { ROLES } from "../modules/constants/roles.js";
 import { verifyRefreshToken } from "../utils/jwt.js";
-import { revokeRefreshToken, verifyRefreshSession, storeRefreshToken, rotateRefreshToken, consumeRefreshSession, attachRotatedSession } from "./refreshToken.service.js";
+import { storeRefreshToken, verifyRefreshSession, revokeRefreshToken, consumeRefreshSession, attachRotatedSession } from "./refreshToken.service.js";
 import { REFRESH_TOKEN_TTL, REFRESH_REUSE_GRACE_MS } from "../modules/constants/auth.js";
 import { ensureAccountNotLocked, recordFailedLoginAttempt, resetFailedLoginAttempts } from "./accountLockout.service.js";
 import { revokeAllSessions } from "./session.service.js";
 import { queueNotification } from "../modules/notification/notification.service.js";
 import { logger } from "../utils/logger.js";
+import { createAuditLog } from "./auditLog.service.js";
 //
 export const createTokenPair = (account, accountType) => {
 
@@ -118,7 +119,7 @@ export const changePassword = async ({
     const updateData = {
         passwordHash,
         mustChangePassword: false,
-        sessionVersion: { increment: 1},
+        sessionVersion: { increment: 1 },
     };
 
     if (model === "client") {
@@ -131,6 +132,18 @@ export const changePassword = async ({
         data: updateData,
     });
     await revokeAllSessions(account.id);
+    await createAuditLog({
+        actorId: account.id,
+        actorType: model === "client"
+            ? "CLIENT"
+            : "USER",
+        action: "PASSWORD_CHANGE",
+        resource: "AUTH",
+        status: "SUCCESS",
+        metadata: {
+            sessionRevoked: true
+        }
+    });
 
     return {
         success: true,
@@ -139,43 +152,85 @@ export const changePassword = async ({
 
 
 //account authentication Helper
+// ✅ FIXED: Added 'req' parameter to the function signature destructured object
 export const authenticateAccount = async ({
     account,
     password,
-    accountType,
+    portal,
+    req // 🛡️ Hands network request telemetry down to your inner methods safely
 }) => {
-    const model = accountType === "CLIENT" ? "client" : "user";
+    const model = portal === "CLIENT" ? "client" : "user";
 
-    // 1. Assert account is currently unfrozen
+    const ALLOWED_GATEWAY_ROLES = {
+        ADMIN: [ROLES.PLATFORM_GLOBAL_ADMIN, ROLES.AGENCY_ADMIN],
+        STAFF: [ROLES.DESK_AGENT],
+        CLIENT: [ROLES.TRAVELLER, "CLIENT"],
+    };
+
+    const currentRole = account.role || "CLIENT";
+    const allowedRoles = ALLOWED_GATEWAY_ROLES[portal?.toUpperCase()];
+
+    if (!allowedRoles || !allowedRoles.includes(currentRole)) {
+        throw new AppError(
+             403,
+            "UNAUTHORIZED_GATEWAY",
+            "Access Denied: Your account role is not permitted to log in through this portal."
+        );
+    }
+
+    // ==========================================
+    // REST OF YOUR PERFECT AUTHENTICATION LOGIC
+    // ==========================================
     await ensureAccountNotLocked(model, account);
 
-    // 2. Validate Password Integrity
     try {
         await verifyPassword(password, account.passwordHash);
     } catch (error) {
-        // Record the failure to DB first
         await recordFailedLoginAttempt(model, account);
+        
+        // Pass req data context down to your fixed audit log handlers
+        await createAuditLog({
+            actorId: account.id,
+            actorType: portal,
+            action: "LOGIN",
+            resource: "AUTH",
+            status: "FAILURE",
+            ipAddress: req?.ip || "127.0.0.1",
+            userAgent: req?.headers["user-agent"] || "unknown",
+            metadata: { reason: error.code },
+        });
 
-        // If password was wrong, recordfailedLoginAttempt executes, increments, 
-        // and if it hits 5, it throws an AppError. If it doesn't throw, we fall through
-        // and throw the generic invalid credentials block below.
         throw error;
     }
 
-    // 3. Complete successful login session setup
     await resetFailedLoginAttempts(model, account.id);
+    const tokens = createTokenPair(account, portal);
 
-    const tokens = createTokenPair(account, accountType);
-
+    // Pass the req variable forward if your storage function extracts device metrics
     await storeRefreshToken({
         jti: tokens.jti,
         userId: account.id,
-        type: accountType,
+        type: portal,
         ttl: REFRESH_TOKEN_TTL,
+        req // Pass it down if needed
     });
-    console.log("Stored Refresh JTI:", tokens.jti);
 
     await updateLastLogin(model, account.id);
+
+    await createAuditLog({
+        actorId: account.id,
+        actorType: portal,
+        action: "LOGIN",
+        resource: "AUTH",
+        status: "SUCCESS",
+        ipAddress: req?.ip || "127.0.0.1",
+        userAgent: req?.headers["user-agent"] || "unknown",
+        metadata: {
+            role: account.role,
+            tenantId: account.tenantId,
+        },
+    });
+
     return tokens;
 };
 
@@ -203,6 +258,17 @@ export const logout = async (refreshToken) => {
 
         await revokeRefreshToken(payload.jti);
 
+        await createAuditLog({
+            actorId: session.userId,
+            actorType: session.type,
+            action: "LOGOUT",
+            resource: "AUTH",
+            status: "SUCCESS",
+            metadata: {
+                jti: payload.jti,
+            }
+        });
+
         // Return success
 
         return {
@@ -229,7 +295,7 @@ export const logout = async (refreshToken) => {
 // outstanding access token is rejected by the auth middleware, wipe all refresh
 // sessions from Redis, and alert the account owner. Mirrors the hard-revocation
 // combo already used by changePassword().
-const handleTokenReuse = async ({ model, userId }) => {
+const handleTokenReuse = async ({ model, userId, payload }) => {
 
     let account = null;
 
@@ -247,6 +313,17 @@ const handleTokenReuse = async ({ model, userId }) => {
     }
 
     await revokeAllSessions(userId);
+
+    await createAuditLog({
+        actorId: payload.sub,
+        actorType: payload.type,
+        action: "TOKEN_REUSE",
+        resource: "AUTH",
+        status: "FAILURE",
+        metadata: {
+            jti: payload.jti,
+        },
+    });
 
     // Notify the owner. Never let a notification failure block revocation.
     try {
@@ -307,7 +384,7 @@ export const refreshTokenRotation = async (refreshToken, next) => {
             }
 
             // Genuine replay of a consumed token -> revoke everything.
-            await handleTokenReuse({ model, userId: payload.sub });
+            await handleTokenReuse({ model, userId: payload.sub, payload });
 
             throw new AppError(
                 401,
@@ -386,6 +463,18 @@ export const refreshTokenRotation = async (refreshToken, next) => {
             ttl: REFRESH_TOKEN_TTL,
         });
 
+        await createAuditLog({
+            actorId: account.id,
+            actorType: session.type,
+            action: "TOKEN_REFRESH",
+            resource: "AUTH",
+            status: "SUCCESS",
+            metadata: {
+                oldJti: payload.jti,
+                newJti: tokens.jti,
+                tenantId: account.tenantId
+            }
+        });
 
         // Never expose the internal JTI to clients.
         return {
@@ -393,9 +482,16 @@ export const refreshTokenRotation = async (refreshToken, next) => {
             refreshToken: tokens.refreshToken,
         };
 
+
     } catch (error) {
 
-        console.error(error);
+
+        logger.error(
+            "AUTH_REFRESH_FAILED",
+            {
+                err: error,
+            }
+        );
         throw error;
     }
 };

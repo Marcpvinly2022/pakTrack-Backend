@@ -6,7 +6,7 @@ import { successResponse } from '../../utils/apiResponse.js';
 import * as authenticationService from '../../services/authentication.service.js';
 import { REFRESH_TOKEN_TTL } from '../constants/auth.js';
 import * as passwordResetService from '../../services/passwordReset.service.js';
-
+import { createAuditLog } from '../../services/auditLog.service.js';
 export const registerAgency = async (req, res, next) => {
     try {
         // console.log(req.body);
@@ -55,7 +55,11 @@ export const loginUser = async (req, res, next) => {
             )
         }
 
-        const authenticationData = await authService.agencyLogin(payload.data);
+        const authenticationData = await authService.agencyLogin({
+            email: payload.data.email,
+            password: payload.data.password,
+            req
+        });
 
 
         return res.status(200).json({

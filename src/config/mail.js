@@ -5,6 +5,8 @@ export const mailTransporter = nodemailer.createTransport({
     port: Number(process.env.SMTP_PORT),
 
     secure: process.env.SMTP_SECURE ==="true",
+    // Force IPv4 resolution
+    dns_result_order: 'ipv4first', 
 
     auth: {
         user: process.env.SMTP_USER,

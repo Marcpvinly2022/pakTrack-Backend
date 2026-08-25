@@ -7,7 +7,7 @@ const router = Router();
 router.post("/register", authController.registerAgency);
 router.post("/login", loginLimiter, authController.loginUser);
 
-router.use(authenticate, apiLimiter);
+
 
 router.post(
     "/logout",
@@ -26,8 +26,9 @@ router.post(
     authController.resetPassword
 );
 router.post("/refresh", preVerifyRefreshToken, refreshLimiter, authController.refreshToken);
-router.post("/change-password",authenticate, authController.changePassword);
 
+router.use(authenticate, apiLimiter);
+router.post("/change-password",authenticate, authController.changePassword);
 router.post("/me", authenticate, authController.getCurrentUser);
 
 export default router;

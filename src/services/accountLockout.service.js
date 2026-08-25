@@ -1,6 +1,7 @@
 import { prisma } from "../config/database.js";
 import { AppError } from "../middlewares/errorHandler.js";
 import { MAX_LOGIN_ATTEMPTS, ACCOUNT_LOCK_DURATION } from "../modules/constants/security.js";
+import { createAuditLog } from "./auditLog.service.js";
 
 export const ensureAccountNotLocked = async (model, account) => {
     const refreshAccount = await prisma[model].findUnique({
@@ -8,13 +9,13 @@ export const ensureAccountNotLocked = async (model, account) => {
             id: account.id,
         },
 
-        select : {
+        select: {
             failedLoginAttempts: true,
             lockedUntil: true,
         }
     });
 
-     if (!refreshAccount) {
+    if (!refreshAccount) {
         throw new AppError(
             404,
             "ACCOUNT_NOT_FOUND",
@@ -99,6 +100,16 @@ export const recordFailedLoginAttempt = async (
 
     });
 
+
+    await createAuditLog({
+        actorId: account.id,
+        actorType: model === "client"
+            ? "CLIENT"
+            : "USER",
+        action: "ACCOUNT_LOCKED",
+        resource: "AUTH",
+        status: "FAILURE",
+    });
     // STEP 4
     throw new AppError(
         423,

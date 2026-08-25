@@ -98,6 +98,14 @@ export const forgotPasswordSchema = z.object({
 });
 
 
+export const deactivateDeskAgentSchema = z.object({
+    reassignToDeskAgentId: z
+        .string()
+        .uuid({ message: "A valid desk agent to reassign clients to is required." }),
+    notes: z.string().trim().max(500).optional(),
+});
+
+
 export const resetPasswordSchema = z.object({
 
     token: z

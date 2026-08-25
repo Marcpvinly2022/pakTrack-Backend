@@ -5,6 +5,7 @@ import { PASSWORD_RESET_TOKEN_TTL } from "../modules/constants/security.js";
 import { notificationQueue } from "../jobs/notification.queue.js";
 import { hashPassword } from "../utils/password.js";
 import { revokeAllSessions } from "./session.service.js";
+import { createAuditLog } from "./auditLog.service.js";
 export const generatePasswordResetToken = () => {
     const token = crypto.randomBytes(32).toString("hex");
 
@@ -86,6 +87,14 @@ export const forgetPassword = async ({
         accoundId: account.id,
         accountType,
         tokenHash,
+    });
+
+    await createAuditLog({
+        actorId: account.id,
+        actorType: accountType,
+        action: "PASSWORD_RESET_REQUEST",
+        resource: "AUTH",
+        status: "SUCCESS",
     });
 
     const notification = await prisma.notification.create({
@@ -206,6 +215,15 @@ export const resetPassword = async ({
         }
     });
     await revokeAllSessions(account.id);
+
+    await createAuditLog({
+        actorId: account.id,
+        actorType: accountType,
+        action: "PASSWORD_RESET",
+        resource: "AUTH",
+        status: "SUCCESS",
+    });
+    
     return {
         success: true,
     };

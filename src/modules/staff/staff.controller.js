@@ -1,12 +1,13 @@
 import * as staffService from "./staff.service.js";
 import { AppError } from "../../middlewares/errorHandler.js";
-import { createStaffSchema, updateStaffSchema, staffIdParamSchema, checkPasswordSchema, loginStaffSchema, forgotPasswordSchema, resetPasswordSchema } from "./staff.validator.js";
+import { deactivateDeskAgentSchema,createStaffSchema, updateStaffSchema, staffIdParamSchema, checkPasswordSchema, loginStaffSchema, forgotPasswordSchema, resetPasswordSchema } from "./staff.validator.js";
 import { prisma } from "../../config/database.js";
 import { queueNotification } from "../notification/notification.service.js";
 import { successResponse } from "../../utils/apiResponse.js";
 import * as authenticationService from "../../services/authentication.service.js";
 import { REFRESH_TOKEN_TTL } from "../constants/auth.js";
 import * as passwordRestService from "../../services/passwordReset.service.js";
+import { createAuditLog } from "../../services/auditLog.service.js";
 //create staff
 export const createStaff = async (req, res, next) => {
     try {
@@ -78,6 +79,8 @@ export const createStaff = async (req, res, next) => {
         )
 
     } catch (error) {
+        console.error(" FULL ", error);
+        console.error(" STACK: ", error?.stack);
         next(error)
     }
 }
@@ -101,7 +104,11 @@ export const staffLogin = async (req, res, next) => {
         }
 
 
-        const staffData = await staffService.staffLogin(payload.data)
+        const staffData = await staffService.staffLogin({
+            email: payload.data.email,
+            password: payload.data.password,
+            req 
+        })
 
         return successResponse(
             res,
@@ -111,9 +118,27 @@ export const staffLogin = async (req, res, next) => {
         )
 
     } catch (error) {
-        next(error)
+        
+         await createAuditLog({
+            actorId: null, // Login failed, so there is no verified actor session ID yet
+            actorType: "USER",
+            action: "LOGIN",
+            resource: "AUTH",
+            resourceId: req.body?.email || "unknown", // Track their input email safely
+            status: "FAILURE",
+            ipAddress: req.ip || req.headers["x-forwarded-for"] || "127.0.0.1",
+            userAgent: req.headers["user-agent"] || "unknown",
+            metadata: {
+                reason: error.code || "INVALID_CREDENTIALS",
+                message: error.message
+            },
+        });
+
+        // Pass the clean, controlled error (401 or 403) down to your global error middleware
+        return next(error);
     }
-}
+
+    }
 
 
 //get all staff
@@ -378,3 +403,39 @@ export const resetPassword = async (req, res, next) => {
         next(error)
     }
 }
+
+
+
+
+export const deactivateDeskAgent = async (req, res, next) => {
+  try {
+    if (!req.user) throw new AppError(401, "UNAUTHORIZED", "Authentication is required.");
+
+    const params = staffIdParamSchema.safeParse(req.params);
+    if (!params.success) {
+      throw new AppError(400, "VALIDATION_ERROR",
+        params.error.issues.map((i) => ({ field: i.path.join("."), message: i.message })));
+    }
+
+    const body = deactivateDeskAgentSchema.safeParse(req.body);
+    if (!body.success) {
+      throw new AppError(400, "VALIDATION_ERROR",
+        body.error.issues.map((i) => ({ field: i.path.join("."), message: i.message })));
+    }
+
+    const result = await staffService.deactivateDeskAgent({
+      tenantId: req.user.tenantId,
+      actorId: req.user.id,
+      deskAgentId: params.data.id,
+      ...body.data,   // reassignToDeskAgentId, notes
+      ipAddress: req.ip || req.headers["x-forwarded-for"] || "127.0.0.1",
+      userAgent: req.headers["user-agent"] || "unknown",
+    });
+
+    return successResponse(res, 200, "Desk agent deactivated and clients reassigned.", result);
+  } catch (error) {
+    console.error(" 🔥 FULL ERROR:", error);
+    console.error(" 🔥 STACK", error?.stack);
+    next(error);
+  }
+};

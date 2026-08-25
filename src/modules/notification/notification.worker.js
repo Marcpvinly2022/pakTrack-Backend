@@ -6,6 +6,7 @@ import { welcomeStaffTemplate } from "../../templates/email/welcomeStaff.templat
 import { welcomeClientTemplate } from "../../templates/email/welcomeClient.template.js";
 import {passwordResetTemplate} from "../../templates/email/passwordReset.template.js";
 import { securityAlertTemplate } from "../../templates/email/securityAlert.template.js";
+import { clientReassignedTemplate } from "../../templates/email/clientReassigned.template.js";
 import { logger } from "../../utils/logger.js";
 
 const subjects = {
@@ -13,6 +14,8 @@ const subjects = {
     CLIENT_ACCOUNT_CREATED: ({ agencyName }) => `Welcome to ${agencyName}`,
     PASSWORD_RESET: "Reset your PakTrack password",
     SECURITY_ALERT: "Security alert: unusual activity on your PakTrack account",
+    CLIENT_REASSIGNED: ({ agencyName }) =>
+        `Your ${agencyName ?? "PakTrack"} consultant has been updated`,
 };
 
 
@@ -63,6 +66,10 @@ export const notificationWorker = new Worker(
 
                 case "SECURITY_ALERT":
                     html = securityAlertTemplate(payload);
+                    break;
+
+                case "CLIENT_REASSIGNED":
+                    html = clientReassignedTemplate(payload);
                     break;
 
                 default:

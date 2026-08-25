@@ -19,6 +19,7 @@ router.post(
     staffController.staffLogin,
 );
 
+router.post("/refresh",preVerifyRefreshToken, refreshLimiter, staffController.refreshToken);
 
 router.use(authenticate, apiLimiter);
 
@@ -59,7 +60,15 @@ router.patch(
 );
 
 
-router.post("/refresh",preVerifyRefreshToken, refreshLimiter, staffController.refreshToken);
+router.patch(
+    "/:id/deactivate",
+    authenticate,
+    authorize(ROLES.AGENCY_ADMIN),
+    staffController.deactivateDeskAgent
+);
+
+
+
 
 router.post(
     "/logout",

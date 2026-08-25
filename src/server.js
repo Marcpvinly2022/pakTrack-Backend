@@ -1,22 +1,35 @@
 import { logger } from './utils/logger.js';
+import 'dotenv/config';
+
+// ========================================================
+// 🛡️ UN-NESTED FLATTENED EMERGENCY SHIELD
+// ========================================================
 process.on("uncaughtException", (error) => {
-    logger.info("⚠️ [PakTrack Core Emergency Block] - Caught Uncaught Exception:");
-    logger.info(error);
-    // Note: In production, you would pipe this to an error logging service like Sentry
+    console.error("\n────────────────────────────────────────────────────────");
+    console.error("🚨 [PAKTRACK RUNTIME CRASH DETECTED]:");
+    console.error("Message Context:", error.message);
+    console.error("Exact File Row Line Stack Trace:\n", error.stack);
+    console.error("────────────────────────────────────────────────────────\n");
+    
+    // Force immediate safe exit so nodemon can cleanly refresh your window
+    process.exit(1); 
 });
 
 process.on("unhandledRejection", (reason, promise) => {
-    logger.error("⚠️ [PakTrack Core Emergency Block] - Caught Unhandled Promise Rejection:");
-    logger.error("Reason Context:", reason);
-    // Shield active! Node.js thread stays alive, keeping your app online
+    console.error("\n────────────────────────────────────────────────────────");
+    console.error("⚠️ [PAKTRACK UNHANDLED PROMISE REJECTION]:");
+    console.error("Reason:", reason?.stack || reason);
+    console.error("────────────────────────────────────────────────────────\n");
+    process.exit(1);
 });
 
-import 'dotenv/config';
+// Continue with your normal boot logs downstream
 logger.info("🔍 DEBUG: DATABASE_URL value is ->", process.env.DATABASE_URL);
 import app from './app.js';
 import { redisClient } from './config/redis.js';
 import { prisma } from './config/database.js';
 import { verifyMailConnection } from './config/mail.js';
+
 import "./modules/notification/notification.worker.js";
 
 const PORT = process.env.PORT || 5000;

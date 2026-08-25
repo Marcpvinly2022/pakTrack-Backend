@@ -17,15 +17,50 @@ router.post(
   ),
   clientController.createClient
 );
+
+router.post(
+  "/:clientId/applications",
+  authenticate,
+  authorize(ROLES.AGENCY_ADMIN, ROLES.DESK_AGENT),
+  clientController.createApplication
+);
+
+
+router.get(
+  "/",
+  authenticate,
+  authorize(ROLES.AGENCY_ADMIN, ROLES.DESK_AGENT),
+  clientController.getClients
+);
+
+router.get(
+  "/:clientId",
+  authenticate,
+  authorize(ROLES.AGENCY_ADMIN, ROLES.DESK_AGENT),
+  clientController.getClientById
+);
+
+router.patch(
+  "/:clientId/assignment",
+  authenticate,
+  authorize(ROLES.AGENCY_ADMIN),          // ← admin only
+  clientController.reassignClient
+);
+
 router.post(
   "/login",
   loginLimiter,
   clientController.clientLogin
 );
+
+
 router.post(
     "/forgot-password",
     forgotPasswordLimiter,
     clientController.forgetPassword
+);
+
+router.post("/change-password",authenticate,clientController.changePassword
 );
 
 router.post(
@@ -34,20 +69,14 @@ router.post(
     clientController.resetPassword
 
   );
+
+
+router.post("/refresh", preVerifyRefreshToken, refreshLimiter, clientController.refreshToken);  
 router.use(authenticate, apiLimiter);
 
 router.post(
     "/logout",
     clientController.logout
-);
-
-
-
-
-
-router.post("/refresh", preVerifyRefreshToken, refreshLimiter, clientController.refreshToken);
-
-router.post("/change-password",authenticate,authorize(ROLES.TRAVELLER),clientController.changePassword
 );
 
 export default router;
